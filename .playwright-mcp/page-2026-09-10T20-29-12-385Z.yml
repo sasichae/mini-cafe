@@ -1,0 +1,25 @@
+- generic [ref=e2]:
+  - navigation [ref=e3]:
+    - link "Mini Café" [ref=e4] [cursor=pointer]:
+      - /url: /
+    - generic [ref=e5]:
+      - link "เมนู" [ref=e6] [cursor=pointer]:
+        - /url: /
+      - link "ตะกร้า" [ref=e112] [cursor=pointer]:
+        - /url: /cart
+  - main [ref=e8]:
+    - generic [ref=e114]:
+      - generic [ref=e115]: ✓
+      - heading "สั่งซื้อสำเร็จ!" [level=1] [ref=e116]
+      - generic [ref=e117]:
+        - paragraph [ref=e118]:
+          - strong [ref=e119]: "Order ID:"
+          - text: "#6"
+        - paragraph [ref=e120]:
+          - strong [ref=e121]: "Total:"
+          - text: ฿315
+        - paragraph [ref=e122]:
+          - strong [ref=e123]: "Status:"
+          - text: pending
+      - link "กลับไปที่เมนู" [ref=e124] [cursor=pointer]:
+        - /url: /

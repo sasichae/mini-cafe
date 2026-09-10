@@ -1,0 +1,40 @@
+- generic [ref=e2]:
+  - navigation [ref=e3]:
+    - link "Mini Café" [ref=e4] [cursor=pointer]:
+      - /url: /
+    - generic [ref=e5]:
+      - link "เมนู" [ref=e6] [cursor=pointer]:
+        - /url: /
+      - link "ตะกร้า 3" [ref=e111] [cursor=pointer]:
+        - /url: /cart
+        - text: ตะกร้า
+        - generic [ref=e79]: "3"
+  - main [ref=e8]:
+    - generic [ref=e81]:
+      - heading "ตะกร้าสินค้า" [level=1] [ref=e82]
+      - generic [ref=e83]:
+        - generic [ref=e84]:
+          - generic [ref=e85]:
+            - heading "Latte" [level=3] [ref=e86]
+            - paragraph [ref=e87]: ฿120 / ชิ้น
+          - generic [ref=e88]:
+            - button "-" [disabled] [ref=e89]
+            - generic [ref=e90]: "1"
+            - button "+" [ref=e91] [cursor=pointer]
+          - paragraph [ref=e93]: รวม ฿120
+          - button "ลบ" [ref=e94] [cursor=pointer]
+        - generic [ref=e95]:
+          - generic [ref=e96]:
+            - heading "Latte" [level=3] [ref=e97]
+            - paragraph [ref=e98]: ฿65 / ชิ้น
+          - generic [ref=e99]:
+            - button "-" [ref=e100] [cursor=pointer]
+            - generic [ref=e101]: "2"
+            - button "+" [active] [ref=e102] [cursor=pointer]
+          - paragraph [ref=e104]: รวม ฿130
+          - button "ลบ" [ref=e105] [cursor=pointer]
+      - generic [ref=e106]:
+        - generic [ref=e107]:
+          - generic [ref=e108]: "ราคารวม:"
+          - generic [ref=e109]: ฿250
+        - button "ยืนยันคำสั่งซื้อ" [ref=e110] [cursor=pointer]
