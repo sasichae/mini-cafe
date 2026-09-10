@@ -1,14 +1,7 @@
-const express = require("express");
+const app = require("./app");
 
-const productRouter = require("./src/routes/product.routes");
-
-const app = express();
-
-const PORT = 3000;
-
-app.use("/api/product" , productRouter);
-
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`🚀 Server is running on port ${PORT}`);
 });

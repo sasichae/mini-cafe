@@ -1,0 +1,168 @@
+const db = require("../config/db");
+
+// POST /api/orders - สร้างออเดอร์
+const createOrder = async (req, res) => {
+  try {
+    const { items } = req.body;
+
+    // Validation: items ต้องเป็น array และมีอย่างน้อย 1 รายการ
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Order must contain at least one item",
+      });
+    }
+
+    // Validation: ตรวจสอบแต่ละ item
+    for (const item of items) {
+      if (!item.product_id || item.quantity <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Each item must have product_id and quantity greater than 0",
+        });
+      }
+    }
+
+    // ดึงข้อมูลสินค้าจาก Database
+    const productIds = items.map((item) => item.product_id);
+    const [products] = await db.query(
+      "SELECT id, price FROM products WHERE id IN (?)",
+      [productIds]
+    );
+
+    // ตรวจสอบว่าสินค้ามีอยู่จริงทุกรายการ
+    if (products.length !== items.length) {
+      return res.status(400).json({
+        success: false,
+        message: "One or more products do not exist",
+      });
+    }
+
+    // สร้าง map ของราคาสินค้า
+    const priceMap = {};
+    products.forEach((p) => {
+      priceMap[p.id] = p.price;
+    });
+
+    // คำนวณราคารวม
+    let totalPrice = 0;
+    const orderItems = items.map((item) => {
+      const price = priceMap[item.product_id];
+      const itemTotal = price * item.quantity;
+      totalPrice += itemTotal;
+      return {
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price: price,
+      };
+    });
+
+    // ใช้ transaction เพื่อความปลอดภัย
+    const connection = await db.getConnection();
+    await connection.beginTransaction();
+
+    try {
+      // บันทึกออเดอร์ลงตาราง orders
+      const [orderResult] = await connection.query(
+        "INSERT INTO orders (total_price, status) VALUES (?, 'pending')",
+        [totalPrice]
+      );
+      const orderId = orderResult.insertId;
+
+      // บันทึกรายการสินค้าลงตาราง order_items
+      const orderItemsValues = orderItems.map((item) => [
+        orderId,
+        item.product_id,
+        item.quantity,
+        item.price,
+      ]);
+
+      await connection.query(
+        "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ?",
+        [orderItemsValues]
+      );
+
+      await connection.commit();
+
+      res.status(201).json({
+        success: true,
+        message: "Order created successfully",
+        data: {
+          id: orderId,
+          total_price: totalPrice,
+          status: "pending",
+          items: orderItems,
+        },
+      });
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// GET /api/orders - ดูออเดอร์ทั้งหมด
+const getOrders = async (req, res) => {
+  try {
+    const [orders] = await db.query(
+      "SELECT * FROM orders ORDER BY created_at DESC"
+    );
+    res.status(200).json({ success: true, data: orders });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// GET /api/orders/:id - ดูรายละเอียดออเดอร์พร้อมรายการสินค้า
+const getOrderById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // ดึงข้อมูลออเดอร์
+    const [orders] = await db.query("SELECT * FROM orders WHERE id = ?", [id]);
+
+    if (orders.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    const order = orders[0];
+
+    // ดึงรายการสินค้าในออเดอร์ พร้อมชื่อสินค้า
+    const [items] = await db.query(
+      `SELECT 
+        oi.id,
+        oi.product_id,
+        p.name as product_name,
+        oi.quantity,
+        oi.price,
+        (oi.price * oi.quantity) as item_total
+      FROM order_items oi
+      JOIN products p ON oi.product_id = p.id
+      WHERE oi.order_id = ?`,
+      [id]
+    );
+
+    res.status(200).json({
+      success: true,
+      data: {
+        ...order,
+        items: items,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+module.exports = {
+  createOrder,
+  getOrders,
+  getOrderById,
+};
