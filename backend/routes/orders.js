@@ -2,6 +2,120 @@ const express = require('express')
 const router = express.Router()
 const pool = require('../db')
 const { authenticate } = require('../middleware/auth')
+const { authorize } = require('../middleware/authorize')
+
+router.get('/', authenticate, authorize('admin'), async (req, res) => {
+  try {
+    const [orders] = await pool.execute(
+      `SELECT o.order_id, o.user_id, o.total_amount, o.status, o.created_at,
+              u.username
+       FROM orders o
+       LEFT JOIN users u ON o.user_id = u.user_id
+       ORDER BY o.created_at DESC`
+    )
+
+    for (const order of orders) {
+      const [items] = await pool.execute(
+        `SELECT oi.*, p.name as product_name
+         FROM order_items oi
+         LEFT JOIN products p ON oi.product_id = p.product_id
+         WHERE oi.order_id = ?`,
+        [order.order_id]
+      )
+      order.items = items
+    }
+
+    res.json({
+      success: true,
+      data: orders
+    })
+  } catch (error) {
+    console.error('Get orders error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'เกิดข้อผิดพลาดในเซิร์ฟเวอร์'
+    })
+  }
+})
+
+router.get('/:id', authenticate, async (req, res) => {
+  try {
+    const [orders] = await pool.execute(
+      `SELECT o.order_id, o.user_id, o.total_amount, o.status, o.created_at,
+              u.username
+       FROM orders o
+       LEFT JOIN users u ON o.user_id = u.user_id
+       WHERE o.order_id = ?`,
+      [req.params.id]
+    )
+
+    if (orders.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'ไม่พบ Order นี้'
+      })
+    }
+
+    const order = orders[0]
+
+    const [items] = await pool.execute(
+      `SELECT oi.*, p.name as product_name
+       FROM order_items oi
+       LEFT JOIN products p ON oi.product_id = p.product_id
+       WHERE oi.order_id = ?`,
+      [order.order_id]
+    )
+    order.items = items
+
+    res.json({
+      success: true,
+      data: order
+    })
+  } catch (error) {
+    console.error('Get order error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'เกิดข้อผิดพลาดในเซิร์ฟเวอร์'
+    })
+  }
+})
+
+router.patch('/:id/status', authenticate, authorize('admin'), async (req, res) => {
+  const { status } = req.body
+  const validStatuses = ['pending', 'preparing', 'completed', 'cancelled']
+
+  if (!status || !validStatuses.includes(status)) {
+    return res.status(400).json({
+      success: false,
+      message: 'สถานะไม่ถูกต้อง (pending, preparing, completed, cancelled)'
+    })
+  }
+
+  try {
+    const [result] = await pool.execute(
+      'UPDATE orders SET status = ? WHERE order_id = ?',
+      [status, req.params.id]
+    )
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'ไม่พบ Order นี้'
+      })
+    }
+
+    res.json({
+      success: true,
+      message: 'อัปเดตสถานะสำเร็จ'
+    })
+  } catch (error) {
+    console.error('Update order status error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'เกิดข้อผิดพลาดในเซิร์ฟเวอร์'
+    })
+  }
+})
 
 router.post('/', authenticate, async (req, res) => {
   const { items } = req.body
