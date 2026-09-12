@@ -102,3 +102,11 @@ export async function deleteOrder(id) {
   if (!data.success) throw new Error(data.message);
   return data;
 }
+
+// Admin API
+export async function getAdminStats() {
+  const res = await fetch(`${API_URL}/api/admin/stats`);
+  const data = await res.json();
+  if (!data.success) throw new Error(data.message);
+  return data.data;
+}

@@ -21,6 +21,9 @@ export default function Navbar() {
           ตะกร้า
           {count > 0 && <span className="cart-badge">{count}</span>}
         </Link>
+        <Link to="/admin" className="nav-link nav-admin">
+          Admin
+        </Link>
       </div>
     </nav>
   );
