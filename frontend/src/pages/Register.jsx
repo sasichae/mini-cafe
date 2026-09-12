@@ -2,12 +2,12 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const USERNAME_RE = /^[a-zA-Z0-9_]+$/;
+const USERNAME_RE = /^(?=.*[a-zA-Z])[a-zA-Z0-9_]+$/;
 
 function validateUsername(value) {
   if (value.length === 0) return null;
   if (value.length < 3 || value.length > 30) return "ชื่อผู้ใช้ต้องมี 3-30 ตัวอักษร";
-  if (!USERNAME_RE.test(value)) return "ใช้ได้เฉพาะ a-z, 0-9, _";
+  if (!USERNAME_RE.test(value)) return "ชื่อผู้ใช้ต้องมีตัวอักษรอย่างน้อย 1 ตัว";
   return null;
 }
 

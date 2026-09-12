@@ -16,8 +16,8 @@ const register = async (req, res) => {
     if (typeof username !== "string" || username.trim().length < 3 || username.trim().length > 30) {
       return res.status(400).json({ success: false, message: "ชื่อผู้ใช้ต้องมี 3-30 ตัวอักษร" });
     }
-    if (!/^[a-zA-Z0-9_]+$/.test(username.trim())) {
-      return res.status(400).json({ success: false, message: "ชื่อผู้ใช้ใช้ได้เฉพาะตัวอักษร ตัวเลข และ _ เท่านั้น" });
+    if (!/^(?=.*[a-zA-Z])[a-zA-Z0-9_]+$/.test(username.trim())) {
+      return res.status(400).json({ success: false, message: "ชื่อผู้ใช้ต้องมีตัวอักษรอย่างน้อย 1 ตัว" });
     }
 
     if (typeof email !== "string" || email.trim().length > 100) {
