@@ -4,8 +4,9 @@ import { getOrderById } from "../services/api";
 import Loading from "../components/Loading";
 
 const STATUS_LABELS = {
-  pending: "รอดำเนินการ",
-  processing: "กำลังเตรียม",
+  pending: "รอรับออเดอร์",
+  preparing: "กำลังทำ",
+  ready: "พร้อมเสิร์ฟ",
   completed: "เสร็จสิ้น",
   cancelled: "ยกเลิก",
 };
@@ -22,7 +23,7 @@ export default function OrderDetail() {
         const data = await getOrderById(id);
         setOrder(data);
       } catch (err) {
-        setError(err.message || "ไม่สามารถโหลดรายละเอียดคำสั่งซื้อได้");
+        setError(err.message || "ไม่สามารถโหลดรายละเอียดออเดอร์ได้");
       } finally {
         setLoading(false);
       }
@@ -37,7 +38,7 @@ export default function OrderDetail() {
       <div className="error-container">
         <p className="error-message">{error}</p>
         <Link to="/orders" className="btn btn-primary">
-          กลับไปหน้าคำสั่งซื้อ
+          กลับไปหน้าออเดอร์
         </Link>
       </div>
     );
@@ -48,10 +49,10 @@ export default function OrderDetail() {
   return (
     <div className="order-detail-page">
       <Link to="/orders" className="back-link">
-        ← กลับไปหน้าคำสั่งซื้อ
+        ← กลับไปหน้าออเดอร์
       </Link>
 
-      <h1 className="page-title">คำสั่งซื้อ #{order.id}</h1>
+      <h1 className="page-title">{order.order_number}</h1>
 
       <div className="order-detail-card">
         <div className="order-detail-header">
@@ -62,6 +63,18 @@ export default function OrderDetail() {
             {new Date(order.created_at).toLocaleString("th-TH")}
           </span>
         </div>
+
+        {order.customer_name && (
+          <p style={{ marginBottom: 16, color: "var(--text-light)" }}>
+            ลูกค้า: {order.customer_name}
+          </p>
+        )}
+
+        {order.created_by_name && (
+          <p style={{ marginBottom: 16, color: "var(--text-light)" }}>
+            สั่งโดย: {order.created_by_name}
+          </p>
+        )}
 
         <div className="order-items">
           <h3>รายการสินค้า</h3>
@@ -80,8 +93,8 @@ export default function OrderDetail() {
                   <tr key={item.id}>
                     <td>{item.product_name}</td>
                     <td>{item.quantity}</td>
-                    <td>฿{parseFloat(item.price).toFixed(2)}</td>
-                    <td>฿{parseFloat(item.item_total).toFixed(2)}</td>
+                    <td>฿{Number(item.price).toLocaleString()}</td>
+                    <td>฿{Number(item.item_total).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -94,7 +107,7 @@ export default function OrderDetail() {
         <div className="order-total-section">
           <span className="total-label">ราคารวมทั้งหมด</span>
           <span className="total-amount">
-            ฿{parseFloat(order.total_price).toFixed(2)}
+            ฿{Number(order.total_price).toLocaleString()}
           </span>
         </div>
       </div>

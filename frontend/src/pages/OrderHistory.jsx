@@ -4,8 +4,9 @@ import { getOrders } from "../services/api";
 import Loading from "../components/Loading";
 
 const STATUS_LABELS = {
-  pending: "รอดำเนินการ",
-  processing: "กำลังเตรียม",
+  pending: "รอรับออเดอร์",
+  preparing: "กำลังทำ",
+  ready: "พร้อมเสิร์ฟ",
   completed: "เสร็จสิ้น",
   cancelled: "ยกเลิก",
 };
@@ -18,20 +19,26 @@ export default function OrderHistory() {
   const [statusFilter, setStatusFilter] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
+
     async function fetchOrders() {
+      setLoading(true);
+      const params = { limit: 10 };
+      if (statusFilter) params.status = statusFilter;
       try {
-        const params = { limit: 10 };
-        if (statusFilter) params.status = statusFilter;
         const result = await getOrders(params);
-        setOrders(result.data);
-        setPagination(result.pagination);
+        if (!cancelled) {
+          setOrders(result.data);
+          setPagination(result.pagination);
+        }
       } catch (err) {
-        setError(err.message || "ไม่สามารถโหลดประวัติคำสั่งซื้อได้");
+        if (!cancelled) setError(err.message || "ไม่สามารถโหลดประวัติออเดอร์ได้");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     fetchOrders();
+    return () => { cancelled = true; };
   }, [statusFilter]);
 
   if (loading) return <Loading />;
@@ -49,7 +56,7 @@ export default function OrderHistory() {
 
   return (
     <div className="order-history-page">
-      <h1 className="page-title">ประวัติคำสั่งซื้อ</h1>
+      <h1 className="page-title">ประวัติออเดอร์</h1>
 
       <div className="filter-bar">
         <select
@@ -58,15 +65,14 @@ export default function OrderHistory() {
           onChange={(e) => setStatusFilter(e.target.value)}
         >
           <option value="">ทุกสถานะ</option>
-          <option value="pending">รอดำเนินการ</option>
-          <option value="processing">กำลังเตรียม</option>
-          <option value="completed">เสร็จสิ้น</option>
-          <option value="cancelled">ยกเลิก</option>
+          {Object.entries(STATUS_LABELS).map(([value, label]) => (
+            <option key={value} value={value}>{label}</option>
+          ))}
         </select>
       </div>
 
       {orders.length === 0 ? (
-        <p className="empty-message">ยังไม่มีคำสั่งซื้อ</p>
+        <p className="empty-message">ยังไม่มีออเดอร์</p>
       ) : (
         <div className="order-list">
           {orders.map((order) => (
@@ -76,14 +82,14 @@ export default function OrderHistory() {
               className="order-card"
             >
               <div className="order-header">
-                <span className="order-id">คำสั่งซื้อ #{order.id}</span>
+                <span className="order-id">{order.order_number}</span>
                 <span className={`order-status status-${order.status}`}>
                   {STATUS_LABELS[order.status] || order.status}
                 </span>
               </div>
               <div className="order-info">
                 <span className="order-total">
-                  ฿{parseFloat(order.total_price).toFixed(2)}
+                  ฿{Number(order.total_price).toLocaleString()}
                 </span>
                 <span className="order-date">
                   {new Date(order.created_at).toLocaleDateString("th-TH")}
