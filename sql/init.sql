@@ -55,17 +55,34 @@ ON DUPLICATE KEY UPDATE username = username;
 INSERT INTO categories (name) VALUES
   ('Coffee'),
   ('Tea'),
-  ('Pastry'),
-  ('Snack')
+  ('Non-Coffee'),
+  ('Bakery'),
+  ('Ice Cream')
 ON DUPLICATE KEY UPDATE name = name;
 
-INSERT INTO products (category_id, name, price, description) VALUES
-  (1, 'Espresso', 80.00, 'Strong black coffee'),
-  (1, 'Latte', 95.00, 'Coffee with steamed milk'),
-  (1, 'Cappuccino', 95.00, 'Coffee with foam'),
-  (2, 'Green Tea', 70.00, 'Japanese green tea'),
-  (2, 'Thai Tea', 65.00, 'Sweet Thai tea'),
-  (3, 'Croissant', 55.00, 'Butter croissant'),
-  (3, 'Muffin', 45.00, 'Blueberry muffin'),
-  (4, 'French Fries', 60.00, 'Crispy fries')
+INSERT INTO products (category_id, name, price, description, is_available) VALUES
+  (1, 'Espresso', 80.00, 'Strong black coffee', TRUE),
+  (1, 'Latte', 95.00, 'Coffee with steamed milk', TRUE),
+  (1, 'Cappuccino', 95.00, 'Coffee with foam', TRUE),
+  (1, 'Americano', 75.00, 'Espresso with hot water', TRUE),
+  (1, 'Mocha', 105.00, 'Coffee with chocolate', TRUE),
+  (2, 'Green Tea', 70.00, 'Japanese green tea', TRUE),
+  (2, 'Thai Tea', 65.00, 'Sweet Thai tea', TRUE),
+  (2, 'Oolong Tea', 75.00, 'Premium oolong tea', TRUE),
+  (2, 'Matcha Latte', 110.00, 'Matcha with steamed milk', TRUE),
+  (3, 'Chocolate', 85.00, 'Rich chocolate drink', TRUE),
+  (3, 'Matcha', 90.00, 'Matcha drink', TRUE),
+  (3, 'Strawberry', 80.00, 'Fresh strawberry smoothie', TRUE),
+  (3, 'Mango', 85.00, 'Mango smoothie', TRUE),
+  (3, 'Orange Juice', 70.00, 'Fresh orange juice', TRUE),
+  (4, 'Croissant', 55.00, 'Butter croissant', TRUE),
+  (4, 'Muffin', 45.00, 'Blueberry muffin', TRUE),
+  (4, 'Donut', 40.00, 'Glazed donut', TRUE),
+  (4, 'Toast', 35.00, 'Butter toast', TRUE),
+  (4, 'Sandwich', 65.00, 'Ham and cheese sandwich', TRUE),
+  (5, 'Vanilla', 60.00, 'Classic vanilla ice cream', TRUE),
+  (5, 'Chocolate', 65.00, 'Rich chocolate ice cream', TRUE),
+  (5, 'Strawberry', 60.00, 'Fresh strawberry ice cream', TRUE),
+  (5, 'Matcha', 70.00, 'Matcha ice cream', TRUE),
+  (5, 'Cookie Dough', 75.00, 'Cookie dough ice cream', TRUE)
 ON DUPLICATE KEY UPDATE name = name;

@@ -1,0 +1,165 @@
+- generic [ref=f1e3]:
+  - banner [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - paragraph [ref=f1e6]: MINI CAFE
+      - heading "Staff Order" [level=1] [ref=f1e7]
+    - generic [ref=f1e8]:
+      - generic [ref=f1e9]: staff
+      - button "Logout" [ref=f1e10] [cursor=pointer]
+  - main [ref=f1e11]:
+    - generic [ref=f1e12]:
+      - generic [ref=f1e13]:
+        - button "All" [ref=f1e14] [cursor=pointer]
+        - button "Coffee" [ref=f1e15] [cursor=pointer]
+        - button "Tea" [ref=f1e16] [cursor=pointer]
+        - button "Non-Coffee" [ref=f1e17] [cursor=pointer]
+        - button "Bakery" [ref=f1e18] [cursor=pointer]
+        - button "Ice Cream" [ref=f1e19] [cursor=pointer]
+      - generic [ref=f1e20]:
+        - generic [ref=f1e21]:
+          - generic [ref=f1e22]:
+            - heading "Espresso" [level=3] [ref=f1e23]
+            - paragraph [ref=f1e24]: Strong black coffee
+            - paragraph [ref=f1e25]: ฿80.00
+          - button "+ Add" [ref=f1e26] [cursor=pointer]
+        - generic [ref=f1e27]:
+          - generic [ref=f1e28]:
+            - heading "Latte" [level=3] [ref=f1e29]
+            - paragraph [ref=f1e30]: Coffee with steamed milk
+            - paragraph [ref=f1e31]: ฿95.00
+          - button "+ Add" [ref=f1e32] [cursor=pointer]
+        - generic [ref=f1e33]:
+          - generic [ref=f1e34]:
+            - heading "Cappuccino" [level=3] [ref=f1e35]
+            - paragraph [ref=f1e36]: Coffee with foam
+            - paragraph [ref=f1e37]: ฿95.00
+          - button "+ Add" [ref=f1e38] [cursor=pointer]
+        - generic [ref=f1e39]:
+          - generic [ref=f1e40]:
+            - heading "Americano" [level=3] [ref=f1e41]
+            - paragraph [ref=f1e42]: Espresso with hot water
+            - paragraph [ref=f1e43]: ฿75.00
+          - button "+ Add" [ref=f1e44] [cursor=pointer]
+        - generic [ref=f1e45]:
+          - generic [ref=f1e46]:
+            - heading "Mocha" [level=3] [ref=f1e47]
+            - paragraph [ref=f1e48]: Coffee with chocolate
+            - paragraph [ref=f1e49]: ฿105.00
+          - button "+ Add" [ref=f1e50] [cursor=pointer]
+        - generic [ref=f1e51]:
+          - generic [ref=f1e52]:
+            - heading "Green Tea" [level=3] [ref=f1e53]
+            - paragraph [ref=f1e54]: Japanese green tea
+            - paragraph [ref=f1e55]: ฿70.00
+          - button "+ Add" [ref=f1e56] [cursor=pointer]
+        - generic [ref=f1e57]:
+          - generic [ref=f1e58]:
+            - heading "Thai Tea" [level=3] [ref=f1e59]
+            - paragraph [ref=f1e60]: Sweet Thai tea
+            - paragraph [ref=f1e61]: ฿65.00
+          - button "+ Add" [ref=f1e62] [cursor=pointer]
+        - generic [ref=f1e63]:
+          - generic [ref=f1e64]:
+            - heading "Oolong Tea" [level=3] [ref=f1e65]
+            - paragraph [ref=f1e66]: Premium oolong tea
+            - paragraph [ref=f1e67]: ฿75.00
+          - button "+ Add" [ref=f1e68] [cursor=pointer]
+        - generic [ref=f1e69]:
+          - generic [ref=f1e70]:
+            - heading "Matcha Latte" [level=3] [ref=f1e71]
+            - paragraph [ref=f1e72]: Matcha with steamed milk
+            - paragraph [ref=f1e73]: ฿110.00
+          - button "+ Add" [ref=f1e74] [cursor=pointer]
+        - generic [ref=f1e75]:
+          - generic [ref=f1e76]:
+            - heading "Chocolate" [level=3] [ref=f1e77]
+            - paragraph [ref=f1e78]: Rich chocolate drink
+            - paragraph [ref=f1e79]: ฿85.00
+          - button "+ Add" [ref=f1e80] [cursor=pointer]
+        - generic [ref=f1e81]:
+          - generic [ref=f1e82]:
+            - heading "Matcha" [level=3] [ref=f1e83]
+            - paragraph [ref=f1e84]: Matcha drink
+            - paragraph [ref=f1e85]: ฿90.00
+          - button "+ Add" [ref=f1e86] [cursor=pointer]
+        - generic [ref=f1e87]:
+          - generic [ref=f1e88]:
+            - heading "Strawberry" [level=3] [ref=f1e89]
+            - paragraph [ref=f1e90]: Fresh strawberry smoothie
+            - paragraph [ref=f1e91]: ฿80.00
+          - button "+ Add" [ref=f1e92] [cursor=pointer]
+        - generic [ref=f1e93]:
+          - generic [ref=f1e94]:
+            - heading "Mango" [level=3] [ref=f1e95]
+            - paragraph [ref=f1e96]: Mango smoothie
+            - paragraph [ref=f1e97]: ฿85.00
+          - button "+ Add" [ref=f1e98] [cursor=pointer]
+        - generic [ref=f1e99]:
+          - generic [ref=f1e100]:
+            - heading "Orange Juice" [level=3] [ref=f1e101]
+            - paragraph [ref=f1e102]: Fresh orange juice
+            - paragraph [ref=f1e103]: ฿70.00
+          - button "+ Add" [ref=f1e104] [cursor=pointer]
+        - generic [ref=f1e105]:
+          - generic [ref=f1e106]:
+            - heading "Croissant" [level=3] [ref=f1e107]
+            - paragraph [ref=f1e108]: Butter croissant
+            - paragraph [ref=f1e109]: ฿55.00
+          - button "+ Add" [ref=f1e110] [cursor=pointer]
+        - generic [ref=f1e111]:
+          - generic [ref=f1e112]:
+            - heading "Muffin" [level=3] [ref=f1e113]
+            - paragraph [ref=f1e114]: Blueberry muffin
+            - paragraph [ref=f1e115]: ฿45.00
+          - button "+ Add" [ref=f1e116] [cursor=pointer]
+        - generic [ref=f1e117]:
+          - generic [ref=f1e118]:
+            - heading "Donut" [level=3] [ref=f1e119]
+            - paragraph [ref=f1e120]: Glazed donut
+            - paragraph [ref=f1e121]: ฿40.00
+          - button "+ Add" [ref=f1e122] [cursor=pointer]
+        - generic [ref=f1e123]:
+          - generic [ref=f1e124]:
+            - heading "Toast" [level=3] [ref=f1e125]
+            - paragraph [ref=f1e126]: Butter toast
+            - paragraph [ref=f1e127]: ฿35.00
+          - button "+ Add" [ref=f1e128] [cursor=pointer]
+        - generic [ref=f1e129]:
+          - generic [ref=f1e130]:
+            - heading "Sandwich" [level=3] [ref=f1e131]
+            - paragraph [ref=f1e132]: Ham and cheese sandwich
+            - paragraph [ref=f1e133]: ฿65.00
+          - button "+ Add" [ref=f1e134] [cursor=pointer]
+        - generic [ref=f1e135]:
+          - generic [ref=f1e136]:
+            - heading "Vanilla" [level=3] [ref=f1e137]
+            - paragraph [ref=f1e138]: Classic vanilla ice cream
+            - paragraph [ref=f1e139]: ฿60.00
+          - button "+ Add" [ref=f1e140] [cursor=pointer]
+        - generic [ref=f1e141]:
+          - generic [ref=f1e142]:
+            - heading "Chocolate" [level=3] [ref=f1e143]
+            - paragraph [ref=f1e144]: Rich chocolate ice cream
+            - paragraph [ref=f1e145]: ฿65.00
+          - button "+ Add" [ref=f1e146] [cursor=pointer]
+        - generic [ref=f1e147]:
+          - generic [ref=f1e148]:
+            - heading "Strawberry" [level=3] [ref=f1e149]
+            - paragraph [ref=f1e150]: Fresh strawberry ice cream
+            - paragraph [ref=f1e151]: ฿60.00
+          - button "+ Add" [ref=f1e152] [cursor=pointer]
+        - generic [ref=f1e153]:
+          - generic [ref=f1e154]:
+            - heading "Matcha" [level=3] [ref=f1e155]
+            - paragraph [ref=f1e156]: Matcha ice cream
+            - paragraph [ref=f1e157]: ฿70.00
+          - button "+ Add" [ref=f1e158] [cursor=pointer]
+        - generic [ref=f1e159]:
+          - generic [ref=f1e160]:
+            - heading "Cookie Dough" [level=3] [ref=f1e161]
+            - paragraph [ref=f1e162]: Cookie dough ice cream
+            - paragraph [ref=f1e163]: ฿75.00
+          - button "+ Add" [ref=f1e164] [cursor=pointer]
+    - complementary [ref=f1e165]:
+      - heading "Order Summary" [level=2] [ref=f1e166]
+      - paragraph [ref=f1e167]: ยังไม่มีสินค้าในตะกร้า

@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { authenticate } from './auth'
 import './Login.css'
 
 export default function Login({ onLogin, onShowRegister }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
 
     if (!username.trim() || !password) {
@@ -15,13 +15,30 @@ export default function Login({ onLogin, onShowRegister }) {
       return
     }
 
-    const user = authenticate(username, password)
-    if (!user) {
-      setError('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง')
-      return
-    }
+    setLoading(true)
+    setError('')
 
-    onLogin(user)
+    try {
+      const res = await fetch('http://localhost:3001/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username.trim(), password })
+      })
+
+      const data = await res.json()
+
+      if (!data.success) {
+        setError(data.message)
+        setLoading(false)
+        return
+      }
+
+      localStorage.setItem('mini-cafe-token', data.token)
+      onLogin(data.user)
+    } catch {
+      setError('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้')
+      setLoading(false)
+    }
   }
 
   return (

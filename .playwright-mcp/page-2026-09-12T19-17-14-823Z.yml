@@ -1,0 +1,26 @@
+- generic [ref=e3]:
+  - region "Mini Cafe" [ref=e4]:
+    - paragraph [ref=e10]: MINI CAFE
+    - heading "Mini Cafe" [level=1] [ref=e11]
+    - paragraph [ref=e12]: กาแฟอร่อยดีต่อใจ ทุกแก้วที่เสิร์ฟด้วยรอยยิ้ม
+  - generic [ref=e13]:
+    - generic [ref=e14]:
+      - heading "เข้าสู่ระบบ" [level=2] [ref=e15]
+      - paragraph [ref=e16]: Sign in to continue
+      - generic [ref=e17]:
+        - generic [ref=e18]: Username
+        - textbox "Username" [ref=e19]:
+          - /placeholder: กรอกชื่อผู้ใช้
+      - generic [ref=e20]:
+        - generic [ref=e21]: Password
+        - textbox "Password" [ref=e22]:
+          - /placeholder: กรอกรหัสผ่าน
+      - button "Login" [ref=e23] [cursor=pointer]
+    - paragraph [ref=e24]:
+      - text: "ทดลองใช้:"
+      - code [ref=e25]: staff / staff123
+      - text: หรือ
+      - code [ref=e26]: admin / admin123
+    - paragraph [ref=e27]:
+      - text: ยังไม่มีบัญชี?
+      - button "สมัครสมาชิก" [ref=e28] [cursor=pointer]
