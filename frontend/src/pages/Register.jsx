@@ -2,6 +2,27 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+const USERNAME_RE = /^[a-zA-Z0-9_]+$/;
+
+function validateUsername(value) {
+  if (value.length === 0) return null;
+  if (value.length < 3 || value.length > 30) return "ชื่อผู้ใช้ต้องมี 3-30 ตัวอักษร";
+  if (!USERNAME_RE.test(value)) return "ใช้ได้เฉพาะ a-z, 0-9, _";
+  return null;
+}
+
+function validateEmail(value) {
+  if (value.length === 0) return null;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return "รูปแบบอีเมลไม่ถูกต้อง";
+  return null;
+}
+
+function validatePassword(value) {
+  if (value.length === 0) return null;
+  if (value.length < 6) return "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร";
+  return null;
+}
+
 export default function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -11,6 +32,11 @@ export default function Register() {
   const [saving, setSaving] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
+
+  const usernameError = validateUsername(username);
+  const emailError = validateEmail(email);
+  const passwordError = validatePassword(password);
+  const confirmError = confirmPassword.length > 0 && password !== confirmPassword ? "รหัสผ่านไม่ตรงกัน" : null;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -41,16 +67,14 @@ export default function Register() {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>ชื่อผู้ใช้ (3-30 ตัวอักษร, a-z, 0-9, _)</label>
+            <label>ชื่อผู้ใช้</label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              minLength={3}
-              maxLength={30}
-              pattern="[a-zA-Z0-9_]+"
               required
             />
+            {usernameError && <span className="field-error">{usernameError}</span>}
           </div>
           <div className="form-group">
             <label>อีเมล</label>
@@ -58,20 +82,19 @@ export default function Register() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              maxLength={100}
               required
             />
+            {emailError && <span className="field-error">{emailError}</span>}
           </div>
           <div className="form-group">
-            <label>รหัสผ่าน (6-100 ตัวอักษร)</label>
+            <label>รหัสผ่าน</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              minLength={6}
-              maxLength={100}
               required
             />
+            {passwordError && <span className="field-error">{passwordError}</span>}
           </div>
           <div className="form-group">
             <label>ยืนยันรหัสผ่าน</label>
@@ -79,10 +102,9 @@ export default function Register() {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              minLength={6}
-              maxLength={100}
               required
             />
+            {confirmError && <span className="field-error">{confirmError}</span>}
           </div>
           <div className="form-actions">
             <button type="submit" className="btn btn-primary btn-block" disabled={saving}>
