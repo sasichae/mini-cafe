@@ -36,12 +36,6 @@ export async function getProducts(params = {}) {
   return handleResponse(res);
 }
 
-export async function getProductById(id) {
-  const res = await fetch(`${API_URL}/api/products/${id}`);
-  const data = await handleResponse(res);
-  return data.data;
-}
-
 export async function createProduct(product) {
   const res = await fetch(`${API_URL}/api/products`, {
     method: "POST",
@@ -88,14 +82,6 @@ export async function getOrders(params = {}) {
     headers: getAuthHeaders(),
   });
   return handleResponse(res);
-}
-
-export async function getOrderById(id) {
-  const res = await fetch(`${API_URL}/api/orders/${id}`, {
-    headers: getAuthHeaders(),
-  });
-  const data = await handleResponse(res);
-  return data.data;
 }
 
 export async function updateOrderStatus(id, status) {
