@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { getProducts, createProduct, updateProduct, deleteProduct } from "../services/api";
+import { useState, useEffect, useRef } from "react";
+import { getProducts, createProduct, updateProduct, deleteProduct, uploadImage } from "../services/api";
 import Loading from "../components/Loading";
 
 const emptyForm = { name: "", description: "", price: "", image: "" };
@@ -13,6 +13,9 @@ export default function AdminProducts() {
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -35,6 +38,8 @@ export default function AdminProducts() {
   function openCreate() {
     setEditingId(null);
     setForm(emptyForm);
+    setImageFile(null);
+    setImagePreview(null);
     setShowForm(true);
   }
 
@@ -46,6 +51,8 @@ export default function AdminProducts() {
       price: product.price,
       image: product.image || "",
     });
+    setImageFile(null);
+    setImagePreview(product.image || null);
     setShowForm(true);
   }
 
@@ -53,25 +60,41 @@ export default function AdminProducts() {
     setShowForm(false);
     setEditingId(null);
     setForm(emptyForm);
+    setImageFile(null);
+    setImagePreview(null);
+  }
+
+  function handleFileChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setSaving(true);
     try {
+      let imageUrl = form.image || null;
+
+      if (imageFile) {
+        const uploaded = await uploadImage(imageFile);
+        imageUrl = uploaded.url;
+      }
+
       if (editingId) {
         await updateProduct(editingId, {
           name: form.name,
           description: form.description,
           price: parseFloat(form.price),
-          image: form.image || null,
+          image: imageUrl,
         });
       } else {
         await createProduct({
           name: form.name,
           description: form.description,
           price: parseFloat(form.price),
-          image: form.image || null,
+          image: imageUrl,
         });
       }
       closeForm();
@@ -144,13 +167,19 @@ export default function AdminProducts() {
                 />
               </div>
               <div className="form-group">
-                <label>URL รูปภาพ</label>
+                <label>รูปภาพสินค้า</label>
                 <input
-                  type="text"
-                  value={form.image}
-                  onChange={(e) => setForm({ ...form, image: e.target.value })}
-                  placeholder="https://..."
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="file-input"
                 />
+                {imagePreview && (
+                  <div className="image-preview">
+                    <img src={imagePreview} alt="Preview" />
+                  </div>
+                )}
               </div>
               <div className="form-actions">
                 <button type="button" className="btn btn-secondary" onClick={closeForm}>
@@ -170,6 +199,7 @@ export default function AdminProducts() {
           <thead>
             <tr>
               <th>ID</th>
+              <th>รูป</th>
               <th>ชื่อสินค้า</th>
               <th>ราคา</th>
               <th>จัดการ</th>
@@ -179,6 +209,13 @@ export default function AdminProducts() {
             {products.map((product) => (
               <tr key={product.id}>
                 <td>{product.id}</td>
+                <td>
+                  {product.image ? (
+                    <img src={product.image} alt={product.name} className="table-product-img" />
+                  ) : (
+                    <span className="no-image">—</span>
+                  )}
+                </td>
                 <td>{product.name}</td>
                 <td>฿{product.price}</td>
                 <td className="table-actions">

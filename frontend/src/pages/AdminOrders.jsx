@@ -4,8 +4,9 @@ import { getOrders, updateOrderStatus, deleteOrder } from "../services/api";
 import Loading from "../components/Loading";
 
 const STATUS_LABELS = {
-  pending: "รอดำเนินการ",
-  processing: "กำลังดำเนินการ",
+  pending: "รอรับออเดอร์",
+  preparing: "กำลังทำ",
+  ready: "พร้อมเสิร์ฟ",
   completed: "เสร็จสิ้น",
   cancelled: "ยกเลิก",
 };
@@ -53,7 +54,7 @@ export default function AdminOrders() {
   }
 
   async function handleDelete(id) {
-    if (!window.confirm("ต้องการลบคำสั่งซื้อนี้?")) return;
+    if (!window.confirm("ต้องการลบออเดอร์นี้?")) return;
     try {
       await deleteOrder(id);
       setRefreshKey((k) => k + 1);
@@ -65,10 +66,15 @@ export default function AdminOrders() {
   return (
     <div className="admin-page">
       <div className="admin-header">
-        <h1 className="page-title">จัดการคำสั่งซื้อ</h1>
-        <Link to="/admin" className="btn btn-secondary">
-          กลับ Dashboard
-        </Link>
+        <h1 className="page-title">จัดการออเดอร์</h1>
+        <div className="admin-header-actions">
+          <Link to="/admin/staff-order" className="btn btn-primary">
+            + สร้างออเดอร์ใหม่
+          </Link>
+          <Link to="/admin" className="btn btn-secondary">
+            กลับ Dashboard
+          </Link>
+        </div>
       </div>
 
       {error && (
@@ -85,35 +91,37 @@ export default function AdminOrders() {
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
         >
           <option value="">ทุกสถานะ</option>
-          <option value="pending">รอดำเนินการ</option>
-          <option value="processing">กำลังดำเนินการ</option>
-          <option value="completed">เสร็จสิ้น</option>
-          <option value="cancelled">ยกเลิก</option>
+          {Object.entries(STATUS_LABELS).map(([value, label]) => (
+            <option key={value} value={value}>{label}</option>
+          ))}
         </select>
       </div>
 
       {loading ? (
         <Loading />
       ) : orders.length === 0 ? (
-        <p className="empty-message">ไม่มีคำสั่งซื้อ</p>
+        <p className="empty-message">ไม่มีออเดอร์</p>
       ) : (
         <div className="admin-table-wrapper">
           <table className="admin-table">
             <thead>
               <tr>
-                <th>ID</th>
+                <th>หมายเลขออเดอร์</th>
+                <th>ลูกค้า</th>
                 <th>วันที่</th>
                 <th>ราคารวม</th>
                 <th>สถานะ</th>
+                <th>สั่งโดย</th>
                 <th>จัดการ</th>
               </tr>
             </thead>
             <tbody>
               {orders.map((order) => (
                 <tr key={order.id}>
-                  <td>
-                    <Link to={`/orders/${order.id}`}>#{order.id}</Link>
+                  <td className="order-number-cell">
+                    <Link to={`/orders/${order.id}`}>{order.order_number}</Link>
                   </td>
+                  <td>{order.customer_name || "-"}</td>
                   <td>{new Date(order.created_at).toLocaleDateString("th-TH")}</td>
                   <td>฿{Number(order.total_price).toLocaleString()}</td>
                   <td>
@@ -127,6 +135,7 @@ export default function AdminOrders() {
                       ))}
                     </select>
                   </td>
+                  <td>{order.created_by_name || "-"}</td>
                   <td className="table-actions">
                     <button
                       className="btn btn-small btn-delete"

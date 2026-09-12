@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import { createOrder } from "../services/api";
 import CartItem from "../components/CartItem";
-import Loading from "../components/Loading";
 
 export default function Cart() {
   const { cart, getTotalPrice, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -15,6 +16,11 @@ export default function Cart() {
 
   async function handleConfirmOrder() {
     if (cart.length === 0) return;
+
+    if (!user) {
+      navigate("/login");
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -25,11 +31,11 @@ export default function Cart() {
         quantity: item.quantity,
       }));
 
-      const orderData = await createOrder(items);
+      const orderData = await createOrder("", items);
       clearCart();
       navigate("/order/success", { state: orderData });
     } catch (err) {
-      setError(err.message || "ไม่สามารถสร้างคำสั่งซื้อได้");
+      setError(err.message || "ไม่สามารถสร้างออเดอร์ได้");
     } finally {
       setLoading(false);
     }
@@ -66,12 +72,18 @@ export default function Cart() {
 
         {error && <p className="error-message">{error}</p>}
 
+        {!user && (
+          <p className="error-message">
+            กรุณา <Link to="/login">เข้าสู่ระบบ</Link> ก่อนสั่งซื้อ
+          </p>
+        )}
+
         <button
           className="btn btn-primary btn-block"
           onClick={handleConfirmOrder}
           disabled={loading}
         >
-          {loading ? "กำลังดำเนินการ..." : "ยืนยันคำสั่งซื้อ"}
+          {loading ? "กำลังดำเนินการ..." : user ? "ยืนยันออเดอร์" : "เข้าสู่ระบบเพื่อสั่งซื้อ"}
         </button>
       </div>
     </div>

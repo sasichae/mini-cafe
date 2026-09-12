@@ -1,14 +1,6 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
-const STATUS_LABELS = {
-  pending: "รอรับออเดอร์",
-  preparing: "กำลังทำ",
-  ready: "พร้อมเสิร์ฟ",
-  completed: "เสร็จสิ้น",
-  cancelled: "ยกเลิก",
-};
-
-export default function OrderSuccess() {
+export default function StaffOrderSuccess() {
   const location = useLocation();
   const navigate = useNavigate();
   const orderData = location.state;
@@ -18,8 +10,8 @@ export default function OrderSuccess() {
       <div className="order-success">
         <div className="order-success-content">
           <p>ไม่พบข้อมูลออเดอร์</p>
-          <Link to="/" className="btn btn-primary">
-            กลับไปที่เมนู
+          <Link to="/admin/staff-order" className="btn btn-primary">
+            กลับไปสร้างออเดอร์
           </Link>
         </div>
       </div>
@@ -30,28 +22,35 @@ export default function OrderSuccess() {
     <div className="order-success">
       <div className="order-success-content">
         <div className="success-icon">✓</div>
-        <h1>สั่งซื้อสำเร็จ!</h1>
+        <h1>สร้างออเดอร์สำเร็จ!</h1>
 
         <div className="order-number-display">
           <span className="order-number-label">หมายเลขออเดอร์</span>
           <span className="order-number-value">{orderData.order_number}</span>
         </div>
 
+        {orderData.customer_name && (
+          <p className="order-customer-name">ลูกค้า: {orderData.customer_name}</p>
+        )}
+
         <div className="order-details">
           <p>
             <strong>ราคารวม:</strong> ฿{Number(orderData.total_price).toLocaleString()}
           </p>
           <p>
-            <strong>สถานะ:</strong> {STATUS_LABELS[orderData.status] || orderData.status}
+            <strong>สถานะ:</strong> รอรับออเดอร์
           </p>
         </div>
 
         <div className="order-success-actions">
-          <Link to="/" className="btn btn-primary">
-            กลับไปที่เมนู
-          </Link>
-          <Link to="/orders" className="btn btn-secondary">
-            ดูออเดอร์
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate("/admin/staff-order")}
+          >
+            สร้างออเดอร์ใหม่
+          </button>
+          <Link to="/admin" className="btn btn-secondary">
+            กลับ Dashboard
           </Link>
         </div>
       </div>
