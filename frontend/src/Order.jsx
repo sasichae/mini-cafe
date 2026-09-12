@@ -217,6 +217,13 @@ export default function Order({ user, onLogout }) {
             ) : (
               products.map(product => (
                 <div key={product.product_id} className="product-card">
+                  {product.image && (
+                    <img
+                      className="product-image"
+                      src={product.image}
+                      alt={product.name}
+                    />
+                  )}
                   <div className="product-info">
                     <h3 className="product-name">{product.name}</h3>
                     <p className="product-desc">{product.description}</p>
