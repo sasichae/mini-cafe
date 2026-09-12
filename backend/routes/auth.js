@@ -14,7 +14,7 @@ router.post('/login', async (req, res) => {
 
   try {
     const [rows] = await pool.execute(
-      'SELECT id, username, name, role FROM users WHERE username = ? AND password = ?',
+      'SELECT user_id, username, role FROM users WHERE username = ? AND password = ?',
       [username, password]
     )
 
@@ -34,9 +34,8 @@ router.post('/login', async (req, res) => {
       success: true,
       message: 'Login สำเร็จ',
       user: {
-        id: user.id,
+        id: user.user_id,
         username: user.username,
-        name: user.name,
         role: user.role
       },
       redirectUrl
