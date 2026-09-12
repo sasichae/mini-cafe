@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Login from './Login'
+import Register from './Register'
 import Order from './Order'
 import AdminDashboard from './AdminDashboard'
 import './App.css'
@@ -11,13 +12,13 @@ function loadSession() {
     const raw = localStorage.getItem(SESSION_KEY)
     return raw ? JSON.parse(raw) : null
   } catch {
-    // Corrupted session storage — treat as logged out.
     return null
   }
 }
 
 export default function App() {
   const [user, setUser] = useState(loadSession)
+  const [view, setView] = useState('login')
 
   useEffect(() => {
     if (user) {
@@ -28,7 +29,10 @@ export default function App() {
   }, [user])
 
   if (!user) {
-    return <Login onLogin={setUser} />
+    if (view === 'register') {
+      return <Register onBackToLogin={() => setView('login')} />
+    }
+    return <Login onLogin={setUser} onShowRegister={() => setView('register')} />
   }
 
   if (user.role === 'admin') {

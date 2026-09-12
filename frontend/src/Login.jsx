@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { authenticate } from './auth'
 import './Login.css'
 
-export default function Login({ onLogin }) {
+export default function Login({ onLogin, onShowRegister }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -99,6 +99,16 @@ export default function Login({ onLogin }) {
         <p className="login-hint">
           ทดลองใช้:{' '}
           <code>staff / staff123</code> หรือ <code>admin / admin123</code>
+        </p>
+        <p className="login-hint">
+          ยังไม่มีบัญชี?{' '}
+          <button
+            type="button"
+            className="link-button"
+            onClick={onShowRegister}
+          >
+            สมัครสมาชิก
+          </button>
         </p>
       </section>
     </div>

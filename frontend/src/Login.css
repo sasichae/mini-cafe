@@ -264,6 +264,21 @@
   font-size: 12px;
 }
 
+.link-button {
+  background: none;
+  border: none;
+  color: var(--caramel);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: inherit;
+  padding: 0;
+}
+
+.link-button:hover {
+  color: var(--espresso);
+}
+
 /* ---- Motion ---- */
 
 @keyframes form-in {

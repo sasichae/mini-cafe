@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS order_items (
 );
 
 INSERT INTO users (username, password, role) VALUES
-  ('admin', 'admin123', 'admin'),
-  ('staff', 'staff123', 'staff')
+  ('admin', '$2b$10$lEu9QOvClvlCAG.wMFe6v.yb7LFbSDAaDptpoy9MBqHL9w6/bqyLu', 'admin'),
+  ('staff', '$2b$10$ByB5xY1Slxy0O08kTG/jMuNAkCMdF1vym4J4WIyqh4y37fSY0dVjm', 'staff')
 ON DUPLICATE KEY UPDATE username = username;
 
 INSERT INTO categories (name) VALUES
