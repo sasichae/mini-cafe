@@ -105,13 +105,53 @@ const createOrder = async (req, res) => {
   }
 };
 
-// GET /api/orders - ดูออเดอร์ทั้งหมด
+// GET /api/orders - ดูออเดอร์ทั้งหมด (พร้อม filter/pagination)
 const getOrders = async (req, res) => {
   try {
+    const { status, from, to, page = 1, limit = 20 } = req.query;
+
+    const where = ["1=1"];
+    const params = [];
+
+    if (status && ["pending", "processing", "completed", "cancelled"].includes(status)) {
+      where.push("status = ?");
+      params.push(status);
+    }
+
+    if (from) {
+      where.push("created_at >= ?");
+      params.push(from);
+    }
+
+    if (to) {
+      where.push("created_at <= ?");
+      params.push(to);
+    }
+
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 20));
+    const offset = (pageNum - 1) * limitNum;
+
     const [orders] = await db.query(
-      "SELECT * FROM orders ORDER BY created_at DESC"
+      `SELECT * FROM orders WHERE ${where.join(" AND ")} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      [...params, limitNum, offset]
     );
-    res.status(200).json({ success: true, data: orders });
+
+    const [[{ total }]] = await db.query(
+      `SELECT COUNT(*) AS total FROM orders WHERE ${where.join(" AND ")}`,
+      params
+    );
+
+    res.status(200).json({
+      success: true,
+      data: orders,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+      },
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -161,8 +201,71 @@ const getOrderById = async (req, res) => {
   }
 };
 
+// PUT /api/orders/:id/status - อัพเดทสถานะออเดอร์
+const updateOrderStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const validStatuses = ["pending", "processing", "completed", "cancelled"];
+    if (!status || !validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Status must be one of: ${validStatuses.join(", ")}`,
+      });
+    }
+
+    const [existing] = await db.query("SELECT * FROM orders WHERE id = ?", [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    await db.query("UPDATE orders SET status = ? WHERE id = ?", [status, id]);
+
+    res.status(200).json({
+      success: true,
+      message: "Order status updated successfully",
+      data: { id: parseInt(id), status },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// DELETE /api/orders/:id - ลบออเดอร์
+const deleteOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [existing] = await db.query("SELECT * FROM orders WHERE id = ?", [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    const connection = await db.getConnection();
+    await connection.beginTransaction();
+
+    try {
+      await connection.query("DELETE FROM order_items WHERE order_id = ?", [id]);
+      await connection.query("DELETE FROM orders WHERE id = ?", [id]);
+      await connection.commit();
+
+      res.status(200).json({ success: true, message: "Order deleted successfully" });
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createOrder,
   getOrders,
   getOrderById,
+  updateOrderStatus,
+  deleteOrder,
 };

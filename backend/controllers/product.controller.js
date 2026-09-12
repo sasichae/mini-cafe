@@ -1,10 +1,59 @@
 const db = require("../config/db");
 
-// GET /api/products - ดูสินค้าทั้งหมด
+// GET /api/products - ดูสินค้าทั้งหมด (พร้อม search/filter/pagination)
 const getProducts = async (req, res) => {
   try {
-    const [products] = await db.query("SELECT * FROM products ORDER BY id DESC");
-    res.status(200).json({ success: true, data: products });
+    const { q, minPrice, maxPrice, page = 1, limit = 20 } = req.query;
+
+    // สร้าง WHERE clause แบบ dynamic
+    const where = ["1=1"];
+    const params = [];
+
+    // ค้นหาจากชื่อหรือรายละเอียด
+    if (q && q.trim() !== "") {
+      where.push("(name LIKE ? OR description LIKE ?)");
+      params.push(`%${q}%`, `%${q}%`);
+    }
+
+    // กรองราคาต่ำสุด
+    if (minPrice && !isNaN(minPrice)) {
+      where.push("price >= ?");
+      params.push(parseFloat(minPrice));
+    }
+
+    // กรองราคาสูงสุด
+    if (maxPrice && !isNaN(maxPrice)) {
+      where.push("price <= ?");
+      params.push(parseFloat(maxPrice));
+    }
+
+    // Pagination - clamp ค่าให้เหมาะสม
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 20));
+    const offset = (pageNum - 1) * limitNum;
+
+    // ดึงข้อมูลสินค้า
+    const [products] = await db.query(
+      `SELECT * FROM products WHERE ${where.join(" AND ")} ORDER BY id DESC LIMIT ? OFFSET ?`,
+      [...params, limitNum, offset]
+    );
+
+    // นับจำนวนทั้งหมด (สำหรับ pagination)
+    const [[{ total }]] = await db.query(
+      `SELECT COUNT(*) AS total FROM products WHERE ${where.join(" AND ")}`,
+      params
+    );
+
+    res.status(200).json({
+      success: true,
+      data: products,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+      },
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

@@ -14,6 +14,9 @@ export default function Navbar() {
         <Link to="/" className="nav-link">
           เมนู
         </Link>
+        <Link to="/orders" className="nav-link">
+          คำสั่งซื้อ
+        </Link>
         <Link to="/cart" className="nav-link cart-link">
           ตะกร้า
           {count > 0 && <span className="cart-badge">{count}</span>}

@@ -7,11 +7,17 @@
     "start": "node server.js",
     "dev": "node --watch server.js"
   },
-  "keywords": ["cafe", "api", "express", "mysql"],
+  "keywords": [
+    "cafe",
+    "api",
+    "express",
+    "mysql"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "cors": "^2.8.6",
     "dotenv": "^16.4.7",
     "express": "^5.2.1",
     "mysql2": "^3.14.1"
