@@ -13,8 +13,22 @@ const register = async (req, res) => {
       return res.status(400).json({ success: false, message: "กรุณากรอกข้อมูลให้ครบทุกช่อง" });
     }
 
-    if (password.length < 6) {
-      return res.status(400).json({ success: false, message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร" });
+    if (typeof username !== "string" || username.trim().length < 3 || username.trim().length > 30) {
+      return res.status(400).json({ success: false, message: "ชื่อผู้ใช้ต้องมี 3-30 ตัวอักษร" });
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(username.trim())) {
+      return res.status(400).json({ success: false, message: "ชื่อผู้ใช้ใช้ได้เฉพาะตัวอักษร ตัวเลข และ _ เท่านั้น" });
+    }
+
+    if (typeof email !== "string" || email.trim().length > 100) {
+      return res.status(400).json({ success: false, message: "อีเมลต้องไม่เกิน 100 ตัวอักษร" });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      return res.status(400).json({ success: false, message: "รูปแบบอีเมลไม่ถูกต้อง" });
+    }
+
+    if (typeof password !== "string" || password.length < 6 || password.length > 100) {
+      return res.status(400).json({ success: false, message: "รหัสผ่านต้องมี 6-100 ตัวอักษร" });
     }
 
     const [existing] = await db.query(

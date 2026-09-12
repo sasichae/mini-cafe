@@ -41,11 +41,14 @@ export default function Register() {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>ชื่อผู้ใช้</label>
+            <label>ชื่อผู้ใช้ (3-30 ตัวอักษร, a-z, 0-9, _)</label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              minLength={3}
+              maxLength={30}
+              pattern="[a-zA-Z0-9_]+"
               required
             />
           </div>
@@ -55,16 +58,18 @@ export default function Register() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              maxLength={100}
               required
             />
           </div>
           <div className="form-group">
-            <label>รหัสผ่าน (อย่างน้อย 6 ตัวอักษร)</label>
+            <label>รหัสผ่าน (6-100 ตัวอักษร)</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               minLength={6}
+              maxLength={100}
               required
             />
           </div>
@@ -75,6 +80,7 @@ export default function Register() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               minLength={6}
+              maxLength={100}
               required
             />
           </div>
