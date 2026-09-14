@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { apiFetch } from './api'
 
 export default function Order({ user, onLogout }) {
@@ -10,6 +11,7 @@ export default function Order({ user, onLogout }) {
   const [orderLoading, setOrderLoading] = useState(false)
   const [orderError, setOrderError] = useState('')
   const [orderSuccess, setOrderSuccess] = useState(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchCategories()
@@ -125,15 +127,15 @@ export default function Order({ user, onLogout }) {
 
   if (orderSuccess) {
     return (
-      <div className="page">
-        <header className="topbar">
-          <div className="topbar-brand">
-            <p className="topbar-kicker">MINI CAFE</p>
-            <h1 className="topbar-title">Staff Order</h1>
+      <div className="min-h-full flex flex-col bg-cream">
+        <header className="flex items-center justify-between gap-4 px-7 py-4 border-b border-border bg-white">
+          <div className="flex flex-col gap-0.5">
+            <p className="m-0 text-[11px] font-bold tracking-[0.34em] text-caramel">MINI CAFE</p>
+            <h1 className="m-0 font-display font-semibold text-2xl leading-tight text-espresso">Staff Order</h1>
           </div>
-          <div className="topbar-actions">
-            <span className="role-chip">{user.username}</span>
-            <button type="button" className="logout-button" onClick={onLogout} title="ออกจากระบบ">
+          <div className="flex items-center gap-3">
+            <span className="px-3 py-1.5 rounded-full bg-cream-deep text-espresso text-[13px] font-bold">{user.username}</span>
+            <button type="button" className="px-4 py-2 border-[1.5px] border-border rounded-lg bg-transparent text-mocha text-sm font-semibold cursor-pointer hover:border-error hover:text-error hover:bg-error-bg focus-visible:outline-3 focus-visible:outline-caramel focus-visible:outline-offset-2 transition-colors" onClick={onLogout} title="ออกจากระบบ">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                 <polyline points="16 17 21 12 16 7" />
@@ -143,21 +145,21 @@ export default function Order({ user, onLogout }) {
           </div>
         </header>
 
-        <main className="order-layout">
-          <section className="order-success">
-            <div className="success-icon">
+        <main className="flex-1 grid grid-cols-[1fr_320px] gap-6 p-6 overflow-hidden">
+          <section className="col-span-full flex flex-col items-center justify-center py-[60px] px-6 text-center">
+            <div className="w-20 h-20 text-[#2d9d4e] mb-6">
               <svg viewBox="0 0 64 64" aria-hidden="true">
                 <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" strokeWidth="3" />
                 <path d="M20 32l8 8 16-16" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <h2 className="success-title">สั่งซื้อสำเร็จ!</h2>
-            <p className="success-order-id">Order #{orderSuccess.order_id}</p>
-            <p className="success-total">ยอดรวม ฿{Number(orderSuccess.total_amount).toFixed(2)}</p>
-            <p className="success-status">สถานะ: pending</p>
+            <h2 className="m-0 mb-2 text-2xl font-bold text-espresso">สั่งซื้อสำเร็จ!</h2>
+            <p className="m-0 mb-1 text-base font-semibold text-caramel">Order #{orderSuccess.order_id}</p>
+            <p className="m-0 mb-1 text-xl font-bold text-espresso">ยอดรวม ฿{Number(orderSuccess.total_amount).toFixed(2)}</p>
+            <p className="m-0 mb-6 text-sm text-mocha">สถานะ: pending</p>
             <button
               type="button"
-              className="success-button"
+              className="px-8 py-3 border-none rounded-[10px] bg-espresso text-cream text-base font-semibold cursor-pointer hover:bg-[#3a2819] transition-colors"
               onClick={newOrder}
               title="สั่งซื้อใหม่"
             >
@@ -175,26 +177,26 @@ export default function Order({ user, onLogout }) {
   }
 
   return (
-    <div className="page">
-      <header className="topbar">
-        <div className="topbar-brand">
-          <p className="topbar-kicker">MINI CAFE</p>
-          <h1 className="topbar-title">Staff Order</h1>
+    <div className="min-h-full flex flex-col bg-cream">
+      <header className="flex items-center justify-between gap-4 px-7 py-4 border-b border-border bg-white">
+        <div className="flex flex-col gap-0.5">
+          <p className="m-0 text-[11px] font-bold tracking-[0.34em] text-caramel">MINI CAFE</p>
+          <h1 className="m-0 font-display font-semibold text-2xl leading-tight text-espresso">Staff Order</h1>
         </div>
-        <div className="topbar-actions">
-          <span className="role-chip">{user.username}</span>
-          <button type="button" className="logout-button" onClick={onLogout}>
+        <div className="flex items-center gap-3">
+          <span className="px-3 py-1.5 rounded-full bg-cream-deep text-espresso text-[13px] font-bold">{user.username}</span>
+          <button type="button" className="px-4 py-2 border-[1.5px] border-border rounded-lg bg-transparent text-mocha text-sm font-semibold cursor-pointer hover:border-error hover:text-error hover:bg-error-bg focus-visible:outline-3 focus-visible:outline-caramel focus-visible:outline-offset-2 transition-colors" onClick={onLogout}>
             Logout
           </button>
         </div>
       </header>
 
-      <main className="order-layout">
-        <section className="menu-section">
-          <div className="category-tabs">
+      <main className="flex-1 grid grid-cols-[1fr_320px] gap-6 p-6 overflow-hidden">
+        <section className="flex flex-col gap-5 overflow-hidden">
+          <div className="flex gap-2 flex-wrap">
             <button
               type="button"
-              className={`category-tab ${selectedCategory === null ? 'active' : ''}`}
+              className={`px-4 py-2 border-[1.5px] border-border rounded-lg bg-white text-mocha text-sm font-semibold cursor-pointer transition-all hover:border-caramel-light hover:text-espresso ${selectedCategory === null ? 'border-caramel bg-espresso text-cream' : ''}`}
               onClick={() => setSelectedCategory(null)}
             >
               All
@@ -203,7 +205,7 @@ export default function Order({ user, onLogout }) {
               <button
                 key={cat.category_id}
                 type="button"
-                className={`category-tab ${selectedCategory === cat.category_id ? 'active' : ''}`}
+                className={`px-4 py-2 border-[1.5px] border-border rounded-lg bg-white text-mocha text-sm font-semibold cursor-pointer transition-all hover:border-caramel-light hover:text-espresso ${selectedCategory === cat.category_id ? 'border-caramel bg-espresso text-cream' : ''}`}
                 onClick={() => setSelectedCategory(cat.category_id)}
               >
                 {cat.name}
@@ -211,29 +213,29 @@ export default function Order({ user, onLogout }) {
             ))}
           </div>
 
-          <div className="product-grid">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 overflow-y-auto pr-2">
             {loading ? (
-              <p className="loading-text">Loading...</p>
+              <p className="col-span-full text-center py-10 text-mocha">Loading...</p>
             ) : products.length === 0 ? (
-              <p className="empty-text">ไม่มีสินค้า</p>
+              <p className="col-span-full text-center py-10 text-mocha">ไม่มีสินค้า</p>
             ) : (
               products.map(product => (
-                <div key={product.product_id} className="product-card">
+                <div key={product.product_id} className="flex flex-col justify-between p-4 border border-border rounded-xl bg-white transition-shadow hover:shadow-[0_24px_60px_-18px_rgba(42,28,19,0.3)]">
                   {product.image && (
                     <img
-                      className="product-image"
+                      className="w-full h-[140px] object-contain rounded-lg mb-3 bg-cream"
                       src={product.image}
                       alt={product.name}
                     />
                   )}
-                  <div className="product-info">
-                    <h3 className="product-name">{product.name}</h3>
-                    <p className="product-desc">{product.description}</p>
-                    <p className="product-price">฿{Number(product.price).toFixed(2)}</p>
+                  <div className="flex flex-col gap-1.5">
+                    <h3 className="m-0 text-base font-semibold text-espresso">{product.name}</h3>
+                    <p className="m-0 text-[13px] text-mocha leading-normal">{product.description}</p>
+                    <p className="mt-2 text-lg font-bold text-caramel">฿{Number(product.price).toFixed(2)}</p>
                   </div>
                   <button
                     type="button"
-                    className="add-button"
+                    className="mt-3 py-2.5 px-0 border-none rounded-lg bg-espresso text-cream text-sm font-semibold cursor-pointer hover:bg-[#3a2819] transition-colors"
                     onClick={() => addToCart(product)}
                     title="เพิ่มลงตะกร้า"
                   >
@@ -249,24 +251,24 @@ export default function Order({ user, onLogout }) {
           </div>
         </section>
 
-        <aside className="cart-section">
-          <h2 className="cart-title">Order Summary</h2>
+        <aside className="flex flex-col p-5 border border-border rounded-xl bg-white h-fit max-h-[calc(100vh-140px)] sticky top-6">
+          <h2 className="m-0 mb-4 text-lg font-semibold text-espresso">Order Summary</h2>
 
           {cart.length === 0 ? (
-            <p className="empty-cart">ยังไม่มีสินค้าในตะกร้า</p>
+            <p className="text-center py-6 text-mocha text-sm">ยังไม่มีสินค้าในตะกร้า</p>
           ) : (
             <>
-              <div className="cart-items">
+              <div className="flex flex-col gap-3 overflow-y-auto flex-1">
                 {cart.map(item => (
-                  <div key={item.product_id} className="cart-item">
-                    <div className="cart-item-info">
-                      <span className="cart-item-name">{item.name}</span>
-                      <span className="cart-item-price">฿{Number(item.price * item.quantity).toFixed(2)}</span>
+                  <div key={item.product_id} className="flex flex-col gap-2 p-3 border border-border rounded-lg">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold text-espresso">{item.name}</span>
+                      <span className="font-semibold text-caramel">฿{Number(item.price * item.quantity).toFixed(2)}</span>
                     </div>
-                    <div className="cart-item-controls">
+                    <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        className="qty-button"
+                        className="w-7 h-7 border border-border rounded-md bg-cream text-espresso text-base font-semibold cursor-pointer flex items-center justify-center hover:bg-cream-deep"
                         onClick={() => updateQuantity(item.product_id, -1)}
                         title="ลดจำนวน"
                       >
@@ -274,10 +276,10 @@ export default function Order({ user, onLogout }) {
                           <line x1="5" y1="12" x2="19" y2="12" />
                         </svg>
                       </button>
-                      <span className="qty-value">{item.quantity}</span>
+                      <span className="min-w-6 text-center font-semibold">{item.quantity}</span>
                       <button
                         type="button"
-                        className="qty-button"
+                        className="w-7 h-7 border border-border rounded-md bg-cream text-espresso text-base font-semibold cursor-pointer flex items-center justify-center hover:bg-cream-deep"
                         onClick={() => updateQuantity(item.product_id, 1)}
                         title="เพิ่มจำนวน"
                       >
@@ -288,7 +290,7 @@ export default function Order({ user, onLogout }) {
                       </button>
                       <button
                         type="button"
-                        className="remove-button"
+                        className="ml-auto px-2 py-1 border-none rounded bg-transparent text-error text-sm cursor-pointer hover:bg-error-bg"
                         onClick={() => removeFromCart(item.product_id)}
                         title="ลบออกจากตะกร้า"
                       >
@@ -303,17 +305,17 @@ export default function Order({ user, onLogout }) {
                 ))}
               </div>
 
-              <div className="cart-footer">
-                <div className="cart-total">
+              <div className="mt-4 pt-4 border-t border-border">
+                <div className="flex justify-between items-center mb-4 text-base font-semibold text-espresso">
                   <span>Total</span>
-                  <span className="total-price">฿{Number(getTotalAmount()).toFixed(2)}</span>
+                  <span className="text-xl text-caramel">฿{Number(getTotalAmount()).toFixed(2)}</span>
                 </div>
                 {orderError && (
-                  <p className="order-error" role="alert">{orderError}</p>
+                  <p className="m-0 mb-3 px-3 py-2.5 rounded-lg bg-error-bg text-error text-[13px] font-semibold text-center" role="alert">{orderError}</p>
                 )}
                 <button
                   type="button"
-                  className="checkout-button"
+                  className="w-full py-3.5 px-0 border-none rounded-[10px] bg-caramel text-white text-base font-bold cursor-pointer hover:bg-[#9a7a5a] disabled:bg-mocha disabled:cursor-not-allowed transition-colors"
                   disabled={orderLoading}
                   onClick={placeOrder}
                   title="สั่งซื้อ"

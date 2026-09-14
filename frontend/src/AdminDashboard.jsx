@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { apiFetch } from './api'
 
 export default function AdminDashboard({ user, onLogout }) {
@@ -22,6 +23,7 @@ export default function AdminDashboard({ user, onLogout }) {
   const [productsLoading, setProductsLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const navigate = useNavigate()
 
   function showError(msg) {
     setError(msg)
@@ -244,10 +246,10 @@ export default function AdminDashboard({ user, onLogout }) {
 
   function getStatusClass(status) {
     const classes = {
-      pending: 'status-pending',
-      preparing: 'status-preparing',
-      completed: 'status-completed',
-      cancelled: 'status-cancelled'
+      pending: 'bg-[#FEF3E2] text-[#E67E22]',
+      preparing: 'bg-[#EBF5FB] text-[#3498DB]',
+      completed: 'bg-[#EAFAF1] text-[#2ECC71]',
+      cancelled: 'bg-[#FDEDEC] text-[#E74C3C]'
     }
     return classes[status] || ''
   }
@@ -264,15 +266,15 @@ export default function AdminDashboard({ user, onLogout }) {
   }
 
   return (
-    <div className="page">
-      <header className="topbar">
-        <div className="topbar-brand">
-          <p className="topbar-kicker">MINI CAFE</p>
-          <h1 className="topbar-title">Admin Dashboard</h1>
+    <div className="min-h-full flex flex-col bg-cream">
+      <header className="flex items-center justify-between gap-4 px-7 py-4 border-b border-border bg-white">
+        <div className="flex flex-col gap-0.5">
+          <p className="m-0 text-[11px] font-bold tracking-[0.34em] text-caramel">MINI CAFE</p>
+          <h1 className="m-0 font-display font-semibold text-2xl leading-tight text-espresso">Admin Dashboard</h1>
         </div>
-        <div className="topbar-actions">
-          <span className="role-chip role-chip-admin">{user.username}</span>
-          <button type="button" className="logout-button" onClick={onLogout} title="ออกจากระบบ">
+        <div className="flex items-center gap-3">
+          <span className="px-3 py-1.5 rounded-full bg-espresso text-cream text-[13px] font-bold">{user.username}</span>
+          <button type="button" className="px-4 py-2 border-[1.5px] border-border rounded-lg bg-transparent text-mocha text-sm font-semibold cursor-pointer hover:border-error hover:text-error hover:bg-error-bg focus-visible:outline-3 focus-visible:outline-caramel focus-visible:outline-offset-2 transition-colors" onClick={onLogout} title="ออกจากระบบ">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
               <polyline points="16 17 21 12 16 7" />
@@ -282,23 +284,14 @@ export default function AdminDashboard({ user, onLogout }) {
         </div>
       </header>
 
-      <div className="admin-layout">
-        <nav className="admin-sidebar" aria-label="Admin">
+      <div className="flex-1 flex min-h-0">
+        <nav className="flex-shrink-0 flex flex-col gap-1 w-[200px] py-4 px-3 border-r border-border bg-white" aria-label="Admin">
           <button
             type="button"
-            className={`sidebar-item ${tab === 'dashboard' ? 'active' : ''}`}
+            className={`flex items-center gap-2.5 py-2.5 px-3 border-none rounded-lg bg-transparent text-mocha text-sm font-semibold text-left cursor-pointer transition-all hover:text-espresso hover:bg-cream ${tab === 'dashboard' ? 'bg-espresso text-cream' : ''}`}
             onClick={() => setTab('dashboard')}
           >
-            <svg
-              className="sidebar-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
+            <svg className="flex-shrink-0 w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <rect x="3" y="3" width="7" height="7" rx="1" />
               <rect x="14" y="3" width="7" height="7" rx="1" />
               <rect x="3" y="14" width="7" height="7" rx="1" />
@@ -308,19 +301,10 @@ export default function AdminDashboard({ user, onLogout }) {
           </button>
           <button
             type="button"
-            className={`sidebar-item ${tab === 'orders' ? 'active' : ''}`}
+            className={`flex items-center gap-2.5 py-2.5 px-3 border-none rounded-lg bg-transparent text-mocha text-sm font-semibold text-left cursor-pointer transition-all hover:text-espresso hover:bg-cream ${tab === 'orders' ? 'bg-espresso text-cream' : ''}`}
             onClick={() => setTab('orders')}
           >
-            <svg
-              className="sidebar-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
+            <svg className="flex-shrink-0 w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
               <rect x="9" y="3" width="6" height="4" rx="1" />
               <path d="m9 14 2 2 4-4" />
@@ -329,19 +313,10 @@ export default function AdminDashboard({ user, onLogout }) {
           </button>
           <button
             type="button"
-            className={`sidebar-item ${tab === 'products' ? 'active' : ''}`}
+            className={`flex items-center gap-2.5 py-2.5 px-3 border-none rounded-lg bg-transparent text-mocha text-sm font-semibold text-left cursor-pointer transition-all hover:text-espresso hover:bg-cream ${tab === 'products' ? 'bg-espresso text-cream' : ''}`}
             onClick={() => setTab('products')}
           >
-            <svg
-              className="sidebar-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
+            <svg className="flex-shrink-0 w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z" />
               <circle cx="7" cy="7" r="1.2" />
             </svg>
@@ -349,443 +324,445 @@ export default function AdminDashboard({ user, onLogout }) {
           </button>
         </nav>
 
-      <main className="admin-main">
-        {error && (
-          <p className="order-error" role="alert">{error}</p>
-        )}
-        {success && (
-          <p className="success-message" role="status">{success}</p>
-        )}
+        <main className="flex-1 min-w-0 flex flex-col gap-6 p-6 overflow-y-auto">
+          {error && (
+            <p className="m-0 mb-3 px-3 py-2.5 rounded-lg bg-error-bg text-error text-[13px] font-semibold text-center" role="alert">{error}</p>
+          )}
+          {success && (
+            <p className="m-0 mb-3 px-3 py-2.5 rounded-lg bg-[#EAFAF1] text-[#2ECC71] text-[13px] font-semibold text-center" role="status">{success}</p>
+          )}
 
-        {/* Dashboard Tab */}
-        {tab === 'dashboard' && (
-          loading ? (
-            <p className="loading-text">Loading...</p>
-          ) : stats && (
-            <section className="stats-grid">
-              <div className="stat-card">
-                <p className="stat-label">Orders วันนี้</p>
-                <p className="stat-value">{stats.orders.today}</p>
-                <p className="stat-sub">฿{Number(stats.revenue.today).toFixed(2)}</p>
-              </div>
-              <div className="stat-card">
-                <p className="stat-label">Orders ทั้งหมด</p>
-                <p className="stat-value">{stats.orders.total}</p>
-                <p className="stat-sub">฿{Number(stats.revenue.total).toFixed(2)}</p>
-              </div>
-              <div className="stat-card">
-                <p className="stat-label">รอดำเนินการ</p>
-                <p className="stat-value stat-pending">{stats.status.pending}</p>
-              </div>
-              <div className="stat-card">
-                <p className="stat-label">กำลังเตรียม</p>
-                <p className="stat-value stat-preparing">{stats.status.preparing}</p>
-              </div>
-              <div className="stat-card">
-                <p className="stat-label">เสร็จสิ้น</p>
-                <p className="stat-value stat-completed">{stats.status.completed}</p>
-              </div>
-              <div className="stat-card">
-                <p className="stat-label">สินค้า / ผู้ใช้</p>
-                <p className="stat-value">{stats.products.total}</p>
-                <p className="stat-sub">{stats.users} ผู้ใช้</p>
-              </div>
-            </section>
-          )
-        )}
+          {tab === 'dashboard' && (
+            loading ? (
+              <p className="col-span-full text-center py-10 text-mocha">Loading...</p>
+            ) : stats && (
+              <section className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
+                <div className="flex flex-col items-center py-5 px-4 border border-border rounded-xl bg-white text-center transition-shadow hover:shadow-[0_24px_60px_-18px_rgba(42,28,19,0.3)]">
+                  <p className="m-0 mb-2 text-[13px] text-mocha">Orders วันนี้</p>
+                  <p className="m-0 text-[28px] font-bold text-espresso">{stats.orders.today}</p>
+                  <p className="mt-1 text-[13px] text-mocha">฿{Number(stats.revenue.today).toFixed(2)}</p>
+                </div>
+                <div className="flex flex-col items-center py-5 px-4 border border-border rounded-xl bg-white text-center transition-shadow hover:shadow-[0_24px_60px_-18px_rgba(42,28,19,0.3)]">
+                  <p className="m-0 mb-2 text-[13px] text-mocha">Orders ทั้งหมด</p>
+                  <p className="m-0 text-[28px] font-bold text-espresso">{stats.orders.total}</p>
+                  <p className="mt-1 text-[13px] text-mocha">฿{Number(stats.revenue.total).toFixed(2)}</p>
+                </div>
+                <div className="flex flex-col items-center py-5 px-4 border border-border rounded-xl bg-white text-center transition-shadow hover:shadow-[0_24px_60px_-18px_rgba(42,28,19,0.3)]">
+                  <p className="m-0 mb-2 text-[13px] text-mocha">รอดำเนินการ</p>
+                  <p className="m-0 text-[28px] font-bold text-[#E67E22]">{stats.status.pending}</p>
+                </div>
+                <div className="flex flex-col items-center py-5 px-4 border border-border rounded-xl bg-white text-center transition-shadow hover:shadow-[0_24px_60px_-18px_rgba(42,28,19,0.3)]">
+                  <p className="m-0 mb-2 text-[13px] text-mocha">กำลังเตรียม</p>
+                  <p className="m-0 text-[28px] font-bold text-[#3498DB]">{stats.status.preparing}</p>
+                </div>
+                <div className="flex flex-col items-center py-5 px-4 border border-border rounded-xl bg-white text-center transition-shadow hover:shadow-[0_24px_60px_-18px_rgba(42,28,19,0.3)]">
+                  <p className="m-0 mb-2 text-[13px] text-mocha">เสร็จสิ้น</p>
+                  <p className="m-0 text-[28px] font-bold text-[#2ECC71]">{stats.status.completed}</p>
+                </div>
+                <div className="flex flex-col items-center py-5 px-4 border border-border rounded-xl bg-white text-center transition-shadow hover:shadow-[0_24px_60px_-18px_rgba(42,28,19,0.3)]">
+                  <p className="m-0 mb-2 text-[13px] text-mocha">สินค้า / ผู้ใช้</p>
+                  <p className="m-0 text-[28px] font-bold text-espresso">{stats.products.total}</p>
+                  <p className="mt-1 text-[13px] text-mocha">{stats.users} ผู้ใช้</p>
+                </div>
+              </section>
+            )
+          )}
 
-        {/* Orders Tab */}
-        {tab === 'orders' && (
-          <section className="orders-section">
-            <h2 className="section-title">รายการ Order ล่าสุด</h2>
+          {tab === 'orders' && (
+            <section className="flex flex-col gap-4">
+              <h2 className="m-0 mb-4 text-lg font-semibold text-espresso">รายการ Order ล่าสุด</h2>
 
-            {ordersLoading ? (
-              <p className="loading-text">Loading...</p>
-            ) : orders.length === 0 ? (
-              <p className="empty-text">ยังไม่มี Order</p>
-            ) : (
-              <div className="orders-table-wrap">
-                <table className="orders-table">
-                  <thead>
-                    <tr>
-                      <th>Order</th>
-                      <th>ลูกค้า</th>
-                      <th>รายการ</th>
-                      <th>ยอดรวม</th>
-                      <th>สถานะ</th>
-                      <th>เวลา</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orders.map(order => (
-                      <tr key={order.order_id}>
-                        <td className="order-id-cell">#{order.order_id}</td>
-                        <td>{order.user_name || order.username}</td>
-                        <td className="items-cell">
-                          {order.items.map(i => `${i.product_name} x${i.quantity}`).join(', ')}
-                        </td>
-                        <td className="price-cell">฿{Number(order.total_amount).toFixed(2)}</td>
-                        <td>
-                          <span className={`status-badge ${getStatusClass(order.status)}`}>
-                            {getStatusLabel(order.status)}
-                          </span>
-                        </td>
-                        <td className="time-cell">{formatDateTime(order.created_at)}</td>
-                        <td>
-                          <button
-                            type="button"
-                            className="detail-button"
-                            onClick={() => setSelectedOrder(order)}
-                            title="ดูรายละเอียด"
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                              <circle cx="12" cy="12" r="3" />
-                            </svg>
-                          </button>
-                        </td>
+              {ordersLoading ? (
+                <p className="col-span-full text-center py-10 text-mocha">Loading...</p>
+              ) : orders.length === 0 ? (
+                <p className="col-span-full text-center py-10 text-mocha">ยังไม่มี Order</p>
+              ) : (
+                <div className="overflow-x-auto border border-border rounded-xl bg-white">
+                  <table className="w-full border-collapse text-sm">
+                    <thead>
+                      <tr>
+                        <th className="px-4 py-3.5 text-left font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">Order</th>
+                        <th className="px-4 py-3.5 text-left font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">ลูกค้า</th>
+                        <th className="px-4 py-3.5 text-left font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">รายการ</th>
+                        <th className="px-4 py-3.5 text-right font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">ยอดรวม</th>
+                        <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">สถานะ</th>
+                        <th className="px-4 py-3.5 text-left font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">เวลา</th>
+                        <th className="px-4 py-3.5 text-right font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap"></th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </section>
-        )}
-
-        {/* Products Tab */}
-        {tab === 'products' && (
-          <section className="products-section">
-            <div className="section-header">
-              <h2 className="section-title">รายการสินค้า</h2>
-              <button
-                type="button"
-                className="add-button"
-                onClick={openAddProductForm}
-                title="เพิ่มสินค้า"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-              </button>
-            </div>
-
-            {productsLoading ? (
-              <p className="loading-text">Loading...</p>
-            ) : products.length === 0 ? (
-              <p className="empty-text">ยังไม่มีสินค้า</p>
-            ) : (
-              <div className="orders-table-wrap">
-                <table className="orders-table">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>ชื่อสินค้า</th>
-                      <th>ราคา</th>
-                      <th>หมวดหมู่</th>
-                      <th>สถานะ</th>
-                      <th>การดำเนินการ</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {products.map(product => {
-                      const category = categories.find(c => c.category_id === product.category_id)
-                      return (
-                        <tr key={product.product_id}>
-                          <td className="order-id-cell">{product.product_id}</td>
-                          <td>{product.name}</td>
-                          <td className="price-cell">฿{Number(product.price).toFixed(2)}</td>
-                          <td>{category ? category.name : '-'}</td>
-                          <td>
-                            <span className={`status-badge ${product.is_available ? 'status-completed' : 'status-cancelled'}`}>
-                              {product.is_available ? 'เปิดขาย' : 'ปิดขาย'}
+                    </thead>
+                    <tbody>
+                      {orders.map(order => (
+                        <tr key={order.order_id} className="hover:bg-cream">
+                          <td className="px-4 py-3 border-b border-border text-espresso align-middle font-bold text-caramel whitespace-nowrap text-left">#{order.order_id}</td>
+                          <td className="px-4 py-3 border-b border-border text-espresso align-middle text-left">{order.user_name || order.username}</td>
+                          <td className="px-4 py-3 border-b border-border text-espresso align-middle max-w-[250px] overflow-hidden text-ellipsis whitespace-nowrap text-mocha text-[13px] text-left">
+                            {order.items.map(i => `${i.product_name} x${i.quantity}`).join(', ')}
+                          </td>
+                          <td className="px-4 py-3 border-b border-border text-espresso align-middle font-semibold whitespace-nowrap text-right">฿{Number(order.total_amount).toFixed(2)}</td>
+                          <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">
+                            <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap ${getStatusClass(order.status)}`}>
+                              {getStatusLabel(order.status)}
                             </span>
                           </td>
-                           <td className="actions-cell">
+                          <td className="px-4 py-3 border-b border-border text-espresso align-middle whitespace-nowrap text-[13px] text-mocha text-left">{formatDateTime(order.created_at)}</td>
+                          <td className="px-4 py-3 border-b border-border text-espresso align-middle text-right">
                             <button
                               type="button"
-                              className="detail-button"
-                              onClick={() => openEditProductForm(product)}
-                              title="แก้ไข"
+                              className="px-3 py-1.5 border-[1.5px] border-border rounded-md bg-transparent text-espresso text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all hover:border-caramel hover:text-caramel"
+                              onClick={() => setSelectedOrder(order)}
+                              title="ดูรายละเอียด"
                             >
                               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                                <path d="m15 5 4 4" />
+                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                <circle cx="12" cy="12" r="3" />
                               </svg>
-                            </button>
-                            <button
-                              type="button"
-                              className="detail-button cancel-button"
-                              onClick={() => deleteProduct(product.product_id)}
-                              title="ลบ"
-                            >
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                <path d="M3 6h18" />
-                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                                <line x1="10" y1="11" x2="10" y2="17" />
-                                <line x1="14" y1="11" x2="14" y2="17" />
-                              </svg>
-                            </button>
-                            <button
-                              type="button"
-                              className={`detail-button ${product.is_available ? 'cancel-button' : 'complete-button'}`}
-                              onClick={() => toggleAvailability(product.product_id, product.is_available)}
-                              title={product.is_available ? 'ปิดขาย' : 'เปิดขาย'}
-                            >
-                              {product.is_available ? (
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-                                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-                                  <line x1="1" y1="1" x2="23" y2="23" />
-                                </svg>
-                              ) : (
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                  <circle cx="12" cy="12" r="3" />
-                                </svg>
-                              )}
                             </button>
                           </td>
                         </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </section>
-        )}
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+          )}
 
-        {/* Order Detail Modal */}
-        {selectedOrder && (
-          <div className="modal-overlay" onClick={() => setSelectedOrder(null)}>
-            <div className="modal-card" onClick={e => e.stopPropagation()}>
-              <div className="modal-header">
-                <h3 className="modal-title">Order #{selectedOrder.order_id}</h3>
+          {tab === 'products' && (
+            <section className="flex flex-col gap-4">
+              <div className="flex items-center justify-between gap-4">
+                <h2 className="m-0 text-lg font-semibold text-espresso">รายการสินค้า</h2>
                 <button
                   type="button"
-                  className="modal-close"
-                  onClick={() => setSelectedOrder(null)}
-                  title="ปิด"
+                  className="mt-3 py-2.5 px-0 border-none rounded-lg bg-espresso text-cream text-sm font-semibold cursor-pointer hover:bg-[#3a2819] transition-colors"
+                  onClick={openAddProductForm}
+                  title="เพิ่มสินค้า"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
                   </svg>
                 </button>
               </div>
 
-              <div className="modal-body">
-                <div className="modal-info-row">
-                  <span className="modal-label">ลูกค้า</span>
-                  <span>{selectedOrder.user_name || selectedOrder.username}</span>
+              {productsLoading ? (
+                <p className="col-span-full text-center py-10 text-mocha">Loading...</p>
+              ) : products.length === 0 ? (
+                <p className="col-span-full text-center py-10 text-mocha">ยังไม่มีสินค้า</p>
+              ) : (
+                <div className="overflow-x-auto border border-border rounded-xl bg-white">
+                  <table className="w-full border-collapse text-sm">
+                    <thead>
+                      <tr>
+                        <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">ID</th>
+                        <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">ชื่อสินค้า</th>
+                        <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">ราคา</th>
+                        <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">หมวดหมู่</th>
+                        <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">สถานะ</th>
+                        <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">การดำเนินการ</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {products.map(product => {
+                        const category = categories.find(c => c.category_id === product.category_id)
+                        return (
+                          <tr key={product.product_id} className="hover:bg-cream">
+                            <td className="px-4 py-3 border-b border-border text-espresso align-middle font-bold text-caramel whitespace-nowrap">{product.product_id}</td>
+                            <td className="px-4 py-3 border-b border-border text-espresso align-middle">{product.name}</td>
+                            <td className="px-4 py-3 border-b border-border text-espresso align-middle font-semibold whitespace-nowrap">฿{Number(product.price).toFixed(2)}</td>
+                            <td className="px-4 py-3 border-b border-border text-espresso align-middle">{category ? category.name : '-'}</td>
+                            <td className="px-4 py-3 border-b border-border text-espresso align-middle">
+                              <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap ${product.is_available ? 'bg-[#EAFAF1] text-[#2ECC71]' : 'bg-[#FDEDEC] text-[#E74C3C]'}`}>
+                                {product.is_available ? 'เปิดขาย' : 'ปิดขาย'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 border-b border-border text-espresso align-middle">
+                              <div className="flex gap-2 justify-end">
+                                <button
+                                  type="button"
+                                  className="px-3 py-1.5 border-[1.5px] border-border rounded-md bg-transparent text-espresso text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all hover:border-caramel hover:text-caramel"
+                                  onClick={() => openEditProductForm(product)}
+                                  title="แก้ไข"
+                                >
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                                    <path d="m15 5 4 4" />
+                                  </svg>
+                                </button>
+                                <button
+                                  type="button"
+                                  className="px-3 py-1.5 border-[1.5px] border-border rounded-md bg-[#E74C3C] text-white text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all hover:border-caramel hover:text-white"
+                                  onClick={() => deleteProduct(product.product_id)}
+                                  title="ลบ"
+                                >
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                    <path d="M3 6h18" />
+                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                    <line x1="10" y1="11" x2="10" y2="17" />
+                                    <line x1="14" y1="11" x2="14" y2="17" />
+                                  </svg>
+                                </button>
+                                <button
+                                  type="button"
+                                  className={`px-3 py-1.5 border-[1.5px] border-border rounded-md text-white text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all ${product.is_available ? 'bg-[#E74C3C]' : 'bg-[#2ECC71]'}`}
+                                  onClick={() => toggleAvailability(product.product_id, product.is_available)}
+                                  title={product.is_available ? 'ปิดขาย' : 'เปิดขาย'}
+                                >
+                                  {product.is_available ? (
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                                      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                                      <line x1="1" y1="1" x2="23" y2="23" />
+                                    </svg>
+                                  ) : (
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                      <circle cx="12" cy="12" r="3" />
+                                    </svg>
+                                  )}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
                 </div>
-                <div className="modal-info-row">
-                  <span className="modal-label">วันที่</span>
-                  <span>{formatDateTime(selectedOrder.created_at)}</span>
-                </div>
-                <div className="modal-info-row">
-                  <span className="modal-label">สถานะ</span>
-                  <span className={`status-badge ${getStatusClass(selectedOrder.status)}`}>
-                    {getStatusLabel(selectedOrder.status)}
-                  </span>
-                </div>
+              )}
+            </section>
+          )}
 
-                <h4 className="modal-subtitle">รายการสินค้า</h4>
-                <div className="modal-items">
-                  {selectedOrder.items.map(item => (
-                    <div key={item.order_item_id || item.product_id} className="modal-item">
-                      <span className="modal-item-name">{item.product_name}</span>
-                      <span className="modal-item-qty">x{item.quantity}</span>
-                      <span className="modal-item-price">฿{Number(item.total).toFixed(2)}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="modal-total">
-                  <span>ยอดรวม</span>
-                  <span className="modal-total-price">฿{Number(selectedOrder.total_amount).toFixed(2)}</span>
-                </div>
-
-                <div className="modal-status-actions">
-                  {selectedOrder.status === 'pending' && (
-                    <>
-                      <button
-                        type="button"
-                        className="status-action-button preparing-button"
-                        onClick={() => updateOrderStatus(selectedOrder.order_id, 'preparing')}
-                        title="เริ่มเตรียม"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M12 2v4" />
-                          <path d="m4.93 4.93 2.83 2.83" />
-                          <path d="M2 12h4" />
-                          <path d="m19.07 4.93-2.83 2.83" />
-                          <path d="M22 12h-4" />
-                          <circle cx="12" cy="12" r="4" />
-                        </svg>
-                      </button>
-                      <button
-                        type="button"
-                        className="status-action-button cancel-button"
-                        onClick={() => updateOrderStatus(selectedOrder.order_id, 'cancelled')}
-                        title="ยกเลิก"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <circle cx="12" cy="12" r="10" />
-                          <line x1="15" y1="9" x2="9" y2="15" />
-                          <line x1="9" y1="9" x2="15" y2="15" />
-                        </svg>
-                      </button>
-                    </>
-                  )}
-                  {selectedOrder.status === 'preparing' && (
-                    <button
-                      type="button"
-                      className="status-action-button complete-button"
-                      onClick={() => updateOrderStatus(selectedOrder.order_id, 'completed')}
-                      title="เสร็จสิ้น"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                        <polyline points="22 4 12 14.01 9 11.01" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Product Form Modal */}
-        {showProductForm && (
-          <div className="modal-overlay" onClick={closeProductForm}>
-            <div className="modal-card modal-card-form" onClick={e => e.stopPropagation()}>
-              <div className="modal-header">
-                <h3 className="modal-title">
-                  {editingProduct ? 'แก้ไขสินค้า' : 'เพิ่มสินค้าใหม่'}
-                </h3>
-                <button
-                  type="button"
-                  className="modal-close"
-                  onClick={closeProductForm}
-                  title="ปิด"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="modal-body">
-                {formError && (
-                  <p className="order-error" role="alert">{formError}</p>
-                )}
-
-                <div className="form-field">
-                  <label htmlFor="form-name">ชื่อสินค้า *</label>
-                  <input
-                    id="form-name"
-                    type="text"
-                    placeholder="กรอกชื่อสินค้า"
-                    value={formName}
-                    onChange={e => setFormName(e.target.value)}
-                  />
-                </div>
-
-                <div className="form-field">
-                  <label htmlFor="form-price">ราคา (฿) *</label>
-                  <input
-                    id="form-price"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="กรอกราคา"
-                    value={formPrice}
-                    onChange={e => setFormPrice(e.target.value)}
-                  />
-                </div>
-
-                <div className="form-field">
-                  <label htmlFor="form-category">หมวดหมู่ *</label>
-                  <select
-                    id="form-category"
-                    value={formCategoryId}
-                    onChange={e => setFormCategoryId(e.target.value)}
-                  >
-                    <option value="">เลือกหมวดหมู่</option>
-                    {categories.map(cat => (
-                      <option key={cat.category_id} value={cat.category_id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-field">
-                  <label htmlFor="form-description">รายละเอียด</label>
-                  <textarea
-                    id="form-description"
-                    placeholder="กรอกรายละเอียดสินค้า"
-                    value={formDescription}
-                    onChange={e => setFormDescription(e.target.value)}
-                  />
-                </div>
-
-                <div className="form-field">
-                  <label htmlFor="form-image">รูปภาพ (URL)</label>
-                  <input
-                    id="form-image"
-                    type="text"
-                    placeholder="https://example.com/image.jpg"
-                    value={formImage}
-                    onChange={e => setFormImage(e.target.value)}
-                  />
-                </div>
-
-                <div className="modal-status-actions">
+          {selectedOrder && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/45 z-[100] p-6" onClick={() => setSelectedOrder(null)}>
+              <div className="w-full max-w-[480px] max-h-[85vh] overflow-y-auto rounded-2xl bg-white shadow-[0_20px_40px_rgba(0,0,0,0.2)]" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between py-5 px-6 border-b border-border">
+                  <h3 className="m-0 text-lg font-bold text-espresso">Order #{selectedOrder.order_id}</h3>
                   <button
                     type="button"
-                    className="status-action-button complete-button"
-                    onClick={saveProduct}
-                    disabled={formLoading}
-                    title="บันทึก"
+                    className="w-8 h-8 border-none rounded-lg bg-cream text-mocha text-base font-bold cursor-pointer flex items-center justify-center hover:bg-cream-deep transition-colors"
+                    onClick={() => setSelectedOrder(null)}
+                    title="ปิด"
                   >
-                    {formLoading ? (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="spin">
-                        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                      </svg>
-                    ) : (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                        <polyline points="17 21 17 13 7 13 7 21" />
-                        <polyline points="7 3 7 8 15 8" />
-                      </svg>
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    className="status-action-button cancel-button"
-                    onClick={closeProductForm}
-                    title="ยกเลิก"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="15" y1="9" x2="9" y2="15" />
-                      <line x1="9" y1="9" x2="15" y2="15" />
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
                   </button>
                 </div>
+
+                <div className="flex flex-col gap-4 py-5 px-6">
+                  <div className="flex justify-between items-center text-sm text-espresso">
+                    <span className="text-mocha font-semibold">ลูกค้า</span>
+                    <span>{selectedOrder.user_name || selectedOrder.username}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm text-espresso">
+                    <span className="text-mocha font-semibold">วันที่</span>
+                    <span>{formatDateTime(selectedOrder.created_at)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm text-espresso">
+                    <span className="text-mocha font-semibold">สถานะ</span>
+                    <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap ${getStatusClass(selectedOrder.status)}`}>
+                      {getStatusLabel(selectedOrder.status)}
+                    </span>
+                  </div>
+
+                  <h4 className="m-0 text-[15px] font-semibold text-espresso border-t border-border pt-3">รายการสินค้า</h4>
+                  <div className="flex flex-col gap-2.5">
+                    {selectedOrder.items.map(item => (
+                      <div key={item.order_item_id || item.product_id} className="flex items-center gap-3 py-2.5 px-3 border border-border rounded-lg">
+                        <span className="flex-1 font-semibold text-espresso">{item.product_name}</span>
+                        <span className="text-[13px] text-mocha min-w-[30px] text-center">x{item.quantity}</span>
+                        <span className="font-semibold text-caramel min-w-[70px] text-right">฿{Number(item.total).toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex justify-between items-center pt-3 border-t border-border font-bold text-espresso">
+                    <span>ยอดรวม</span>
+                    <span className="text-xl text-caramel">฿{Number(selectedOrder.total_amount).toFixed(2)}</span>
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    {selectedOrder.status === 'pending' && (
+                      <>
+                        <button
+                          type="button"
+                          className="flex-1 py-2.5 px-0 border-none rounded-lg bg-[#3498DB] text-white text-sm font-bold cursor-pointer transition-opacity hover:opacity-85"
+                          onClick={() => updateOrderStatus(selectedOrder.order_id, 'preparing')}
+                          title="เริ่มเตรียม"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M12 2v4" />
+                            <path d="m4.93 4.93 2.83 2.83" />
+                            <path d="M2 12h4" />
+                            <path d="m19.07 4.93-2.83 2.83" />
+                            <path d="M22 12h-4" />
+                            <circle cx="12" cy="12" r="4" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          className="flex-1 py-2.5 px-0 border-none rounded-lg bg-[#E74C3C] text-white text-sm font-bold cursor-pointer transition-opacity hover:opacity-85"
+                          onClick={() => updateOrderStatus(selectedOrder.order_id, 'cancelled')}
+                          title="ยกเลิก"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="15" y1="9" x2="9" y2="15" />
+                            <line x1="9" y1="9" x2="15" y2="15" />
+                          </svg>
+                        </button>
+                      </>
+                    )}
+                    {selectedOrder.status === 'preparing' && (
+                      <button
+                        type="button"
+                        className="flex-1 py-2.5 px-0 border-none rounded-lg bg-[#2ECC71] text-white text-sm font-bold cursor-pointer transition-opacity hover:opacity-85"
+                        onClick={() => updateOrderStatus(selectedOrder.order_id, 'completed')}
+                        title="เสร็จสิ้น"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                          <polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </main>
+          )}
+
+          {showProductForm && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/45 z-[100] p-6" onClick={closeProductForm}>
+              <div className="w-full max-w-[520px] max-h-[85vh] overflow-y-auto rounded-2xl bg-white shadow-[0_20px_40px_rgba(0,0,0,0.2)]" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between py-5 px-6 border-b border-border">
+                  <h3 className="m-0 text-lg font-bold text-espresso">
+                    {editingProduct ? 'แก้ไขสินค้า' : 'เพิ่มสินค้าใหม่'}
+                  </h3>
+                  <button
+                    type="button"
+                    className="w-8 h-8 border-none rounded-lg bg-cream text-mocha text-base font-bold cursor-pointer flex items-center justify-center hover:bg-cream-deep transition-colors"
+                    onClick={closeProductForm}
+                    title="ปิด"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-4 py-5 px-6">
+                  {formError && (
+                    <p className="m-0 mb-3 px-3 py-2.5 rounded-lg bg-error-bg text-error text-[13px] font-semibold text-center" role="alert">{formError}</p>
+                  )}
+
+                  <div className="flex flex-col gap-1.5">
+                    <label htmlFor="form-name" className="text-[13px] font-semibold text-mocha">ชื่อสินค้า *</label>
+                    <input
+                      id="form-name"
+                      type="text"
+                      placeholder="กรอกชื่อสินค้า"
+                      value={formName}
+                      onChange={e => setFormName(e.target.value)}
+                      className="py-2.5 px-3 border-[1.5px] border-border rounded-lg bg-white text-espresso text-sm transition-colors focus:outline-none focus:border-caramel"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label htmlFor="form-price" className="text-[13px] font-semibold text-mocha">ราคา (฿) *</label>
+                    <input
+                      id="form-price"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="กรอกราคา"
+                      value={formPrice}
+                      onChange={e => setFormPrice(e.target.value)}
+                      className="py-2.5 px-3 border-[1.5px] border-border rounded-lg bg-white text-espresso text-sm transition-colors focus:outline-none focus:border-caramel"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label htmlFor="form-category" className="text-[13px] font-semibold text-mocha">หมวดหมู่ *</label>
+                    <select
+                      id="form-category"
+                      value={formCategoryId}
+                      onChange={e => setFormCategoryId(e.target.value)}
+                      className="py-2.5 px-3 border-[1.5px] border-border rounded-lg bg-white text-espresso text-sm transition-colors focus:outline-none focus:border-caramel"
+                    >
+                      <option value="">เลือกหมวดหมู่</option>
+                      {categories.map(cat => (
+                        <option key={cat.category_id} value={cat.category_id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label htmlFor="form-description" className="text-[13px] font-semibold text-mocha">รายละเอียด</label>
+                    <textarea
+                      id="form-description"
+                      placeholder="กรอกรายละเอียดสินค้า"
+                      value={formDescription}
+                      onChange={e => setFormDescription(e.target.value)}
+                      className="py-2.5 px-3 border-[1.5px] border-border rounded-lg bg-white text-espresso text-sm transition-colors focus:outline-none focus:border-caramel min-h-[80px] resize-y"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label htmlFor="form-image" className="text-[13px] font-semibold text-mocha">รูปภาพ (URL)</label>
+                    <input
+                      id="form-image"
+                      type="text"
+                      placeholder="https://example.com/image.jpg"
+                      value={formImage}
+                      onChange={e => setFormImage(e.target.value)}
+                      className="py-2.5 px-3 border-[1.5px] border-border rounded-lg bg-white text-espresso text-sm transition-colors focus:outline-none focus:border-caramel"
+                    />
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      type="button"
+                      className="flex-1 py-2.5 px-0 border-none rounded-lg bg-[#2ECC71] text-white text-sm font-bold cursor-pointer transition-opacity hover:opacity-85"
+                      onClick={saveProduct}
+                      disabled={formLoading}
+                      title="บันทึก"
+                    >
+                      {formLoading ? (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="spin">
+                          <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                        </svg>
+                      ) : (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                          <polyline points="17 21 17 13 7 13 7 21" />
+                          <polyline points="7 3 7 8 15 8" />
+                        </svg>
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      className="flex-1 py-2.5 px-0 border-none rounded-lg bg-[#E74C3C] text-white text-sm font-bold cursor-pointer transition-opacity hover:opacity-85"
+                      onClick={closeProductForm}
+                      title="ยกเลิก"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="15" y1="9" x2="9" y2="15" />
+                        <line x1="9" y1="9" x2="15" y2="15" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
       </div>
     </div>
   )
