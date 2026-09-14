@@ -466,20 +466,20 @@ export default function AdminDashboard({ user, onLogout }) {
                         const category = categories.find(c => c.category_id === product.category_id)
                         return (
                           <tr key={product.product_id} className="hover:bg-cream">
-                            <td className="px-4 py-3 border-b border-border text-espresso align-middle font-bold text-caramel whitespace-nowrap">{product.product_id}</td>
-                            <td className="px-4 py-3 border-b border-border text-espresso align-middle">{product.name}</td>
-                            <td className="px-4 py-3 border-b border-border text-espresso align-middle font-semibold whitespace-nowrap">฿{Number(product.price).toFixed(2)}</td>
-                            <td className="px-4 py-3 border-b border-border text-espresso align-middle">{category ? category.name : '-'}</td>
-                            <td className="px-4 py-3 border-b border-border text-espresso align-middle">
+                            <td className="px-4 py-3 border-b border-border text-espresso align-middle font-bold text-caramel whitespace-nowrap text-center">{product.product_id}</td>
+                            <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">{product.name}</td>
+                            <td className="px-4 py-3 border-b border-border text-espresso align-middle font-semibold whitespace-nowrap text-center">฿{Number(product.price).toFixed(2)}</td>
+                            <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">{category ? category.name : '-'}</td>
+                            <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">
                               <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap ${product.is_available ? 'bg-[#EAFAF1] text-[#2ECC71]' : 'bg-[#FDEDEC] text-[#E74C3C]'}`}>
                                 {product.is_available ? 'เปิดขาย' : 'ปิดขาย'}
                               </span>
                             </td>
-                            <td className="px-4 py-3 border-b border-border text-espresso align-middle">
-                              <div className="flex gap-2 justify-end">
+                            <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">
+                              <div className="flex gap-2 justify-center">
                                 <button
                                   type="button"
-                                  className="px-3 py-1.5 border-[1.5px] border-border rounded-md bg-transparent text-espresso text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all hover:border-caramel hover:text-caramel"
+                                  className="px-3 py-1.5 rounded-md bg-[#3498DB] text-white text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all hover:bg-[#2980B9]"
                                   onClick={() => openEditProductForm(product)}
                                   title="แก้ไข"
                                 >
@@ -490,7 +490,7 @@ export default function AdminDashboard({ user, onLogout }) {
                                 </button>
                                 <button
                                   type="button"
-                                  className="px-3 py-1.5 border-[1.5px] border-border rounded-md bg-[#E74C3C] text-white text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all hover:border-caramel hover:text-white"
+                                  className="px-3 py-1.5 rounded-md bg-[#E74C3C] text-white text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all hover:bg-[#C0392B]"
                                   onClick={() => deleteProduct(product.product_id)}
                                   title="ลบ"
                                 >
@@ -504,7 +504,7 @@ export default function AdminDashboard({ user, onLogout }) {
                                 </button>
                                 <button
                                   type="button"
-                                  className={`px-3 py-1.5 border-[1.5px] border-border rounded-md text-white text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all ${product.is_available ? 'bg-[#E74C3C]' : 'bg-[#2ECC71]'}`}
+                                  className={`px-3 py-1.5 rounded-md text-white text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all ${product.is_available ? 'bg-[#F39C12] hover:bg-[#D68910]' : 'bg-[#2ECC71] hover:bg-[#27AE60]'}`}
                                   onClick={() => toggleAvailability(product.product_id, product.is_available)}
                                   title={product.is_available ? 'ปิดขาย' : 'เปิดขาย'}
                                 >
