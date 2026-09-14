@@ -879,6 +879,69 @@
   color: var(--white);
 }
 
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.section-header .section-title {
+  margin: 0;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 8px;
+}
+
+.modal-card-form {
+  max-width: 520px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mocha);
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--espresso);
+  font-size: 14px;
+  font-family: var(--font-body);
+  transition: border-color 0.2s ease;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: var(--caramel);
+}
+
+.form-field textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color: var(--mocha);
+  opacity: 0.6;
+}
+
 @media (max-width: 860px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);

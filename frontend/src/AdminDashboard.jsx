@@ -7,6 +7,15 @@ export default function AdminDashboard({ user, onLogout }) {
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
   const [selectedOrder, setSelectedOrder] = useState(null)
+  const [showProductForm, setShowProductForm] = useState(false)
+  const [editingProduct, setEditingProduct] = useState(null)
+  const [formName, setFormName] = useState('')
+  const [formPrice, setFormPrice] = useState('')
+  const [formCategoryId, setFormCategoryId] = useState('')
+  const [formDescription, setFormDescription] = useState('')
+  const [formImage, setFormImage] = useState('')
+  const [formLoading, setFormLoading] = useState(false)
+  const [formError, setFormError] = useState('')
   const [loading, setLoading] = useState(true)
   const [ordersLoading, setOrdersLoading] = useState(true)
   const [productsLoading, setProductsLoading] = useState(true)
@@ -101,6 +110,90 @@ export default function AdminDashboard({ user, onLogout }) {
       }
     } catch {
       setError('ไม่สามารถเปลี่ยนสถานะสินค้าได้')
+    }
+  }
+
+  function openAddProductForm() {
+    setEditingProduct(null)
+    setFormName('')
+    setFormPrice('')
+    setFormCategoryId('')
+    setFormDescription('')
+    setFormImage('')
+    setFormError('')
+    setShowProductForm(true)
+  }
+
+  function openEditProductForm(product) {
+    setEditingProduct(product)
+    setFormName(product.name)
+    setFormPrice(String(product.price))
+    setFormCategoryId(String(product.category_id))
+    setFormDescription(product.description || '')
+    setFormImage(product.image || '')
+    setFormError('')
+    setShowProductForm(true)
+  }
+
+  function closeProductForm() {
+    setEditingProduct(null)
+    setFormError('')
+    setShowProductForm(false)
+  }
+
+  async function saveProduct() {
+    if (!formName.trim() || !formPrice || !formCategoryId) {
+      setFormError('กรุณากรอกชื่อสินค้า, ราคา, และหมวดหมู่')
+      return
+    }
+
+    const parsedPrice = parseFloat(formPrice)
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      setFormError('ราคาต้องมากกว่า 0')
+      return
+    }
+
+    setFormLoading(true)
+    setFormError('')
+
+    try {
+      const body = {
+        name: formName.trim(),
+        price: parsedPrice,
+        category_id: parseInt(formCategoryId, 10),
+        description: formDescription.trim() || null,
+        image: formImage.trim() || null
+      }
+
+      const url = editingProduct
+        ? `http://localhost:3001/api/products/${editingProduct.product_id}`
+        : 'http://localhost:3001/api/products'
+
+      const res = await fetch(url, {
+        method: editingProduct ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(body)
+      })
+
+      const data = await res.json()
+
+      if (!data.success) {
+        setFormError(data.message)
+        setFormLoading(false)
+        return
+      }
+
+      setSuccess(data.message)
+      setTimeout(() => setSuccess(''), 2000)
+      closeProductForm()
+      fetchProducts()
+    } catch {
+      setFormError('ไม่สามารถบันทึกสินค้าได้')
+    } finally {
+      setFormLoading(false)
     }
   }
 
@@ -302,7 +395,16 @@ export default function AdminDashboard({ user, onLogout }) {
         {/* Products Tab */}
         {tab === 'products' && (
           <section className="products-section">
-            <h2 className="section-title">รายการสินค้า</h2>
+            <div className="section-header">
+              <h2 className="section-title">รายการสินค้า</h2>
+              <button
+                type="button"
+                className="add-button"
+                onClick={openAddProductForm}
+              >
+                + เพิ่มสินค้า
+              </button>
+            </div>
 
             {productsLoading ? (
               <p className="loading-text">Loading...</p>
@@ -335,7 +437,14 @@ export default function AdminDashboard({ user, onLogout }) {
                               {product.is_available ? 'เปิดขาย' : 'ปิดขาย'}
                             </span>
                           </td>
-                          <td>
+                          <td className="actions-cell">
+                            <button
+                              type="button"
+                              className="detail-button"
+                              onClick={() => openEditProductForm(product)}
+                            >
+                              แก้ไข
+                            </button>
                             <button
                               type="button"
                               className={`detail-button ${product.is_available ? 'cancel-button' : 'complete-button'}`}
@@ -429,6 +538,111 @@ export default function AdminDashboard({ user, onLogout }) {
                       เสร็จสิ้น
                     </button>
                   )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Product Form Modal */}
+        {showProductForm && (
+          <div className="modal-overlay" onClick={closeProductForm}>
+            <div className="modal-card modal-card-form" onClick={e => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3 className="modal-title">
+                  {editingProduct ? 'แก้ไขสินค้า' : 'เพิ่มสินค้าใหม่'}
+                </h3>
+                <button
+                  type="button"
+                  className="modal-close"
+                  onClick={closeProductForm}
+                >
+                  x
+                </button>
+              </div>
+
+              <div className="modal-body">
+                {formError && (
+                  <p className="order-error" role="alert">{formError}</p>
+                )}
+
+                <div className="form-field">
+                  <label htmlFor="form-name">ชื่อสินค้า *</label>
+                  <input
+                    id="form-name"
+                    type="text"
+                    placeholder="กรอกชื่อสินค้า"
+                    value={formName}
+                    onChange={e => setFormName(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="form-price">ราคา (฿) *</label>
+                  <input
+                    id="form-price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="กรอกราคา"
+                    value={formPrice}
+                    onChange={e => setFormPrice(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="form-category">หมวดหมู่ *</label>
+                  <select
+                    id="form-category"
+                    value={formCategoryId}
+                    onChange={e => setFormCategoryId(e.target.value)}
+                  >
+                    <option value="">เลือกหมวดหมู่</option>
+                    {categories.map(cat => (
+                      <option key={cat.category_id} value={cat.category_id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="form-description">รายละเอียด</label>
+                  <textarea
+                    id="form-description"
+                    placeholder="กรอกรายละเอียดสินค้า"
+                    value={formDescription}
+                    onChange={e => setFormDescription(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="form-image">รูปภาพ (URL)</label>
+                  <input
+                    id="form-image"
+                    type="text"
+                    placeholder="https://example.com/image.jpg"
+                    value={formImage}
+                    onChange={e => setFormImage(e.target.value)}
+                  />
+                </div>
+
+                <div className="modal-status-actions">
+                  <button
+                    type="button"
+                    className="status-action-button complete-button"
+                    onClick={saveProduct}
+                    disabled={formLoading}
+                  >
+                    {formLoading ? 'กำลังบันทึก...' : 'บันทึก'}
+                  </button>
+                  <button
+                    type="button"
+                    className="status-action-button cancel-button"
+                    onClick={closeProductForm}
+                  >
+                    ยกเลิก
+                  </button>
                 </div>
               </div>
             </div>
