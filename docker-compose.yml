@@ -33,5 +33,32 @@ services:
       mysql:
         condition: service_healthy
 
+  backend:
+    build: ./backend
+    container_name: mini-cafe-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: cafe_user
+      DB_PASSWORD: cafe123
+      DB_NAME: mini_cafe
+      JWT_SECRET: 413f5523001e34828a7a6c88dba392c050cca0814408817a6fd4660a465568f9cf7d8fcdf103d4c01eac4fdd00065005ab93dad6cd5939489308dd57ea51bbb0
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    container_name: mini-cafe-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
 volumes:
   mysql-data:
