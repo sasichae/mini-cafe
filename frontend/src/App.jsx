@@ -3,9 +3,8 @@ import Login from './Login'
 import Register from './Register'
 import Order from './Order'
 import AdminDashboard from './AdminDashboard'
+import { SESSION_KEY, UNAUTHORIZED_EVENT } from './api'
 import './App.css'
-
-const SESSION_KEY = 'mini-cafe-session'
 
 function loadSession() {
   try {
@@ -27,6 +26,16 @@ export default function App() {
       localStorage.removeItem(SESSION_KEY)
     }
   }, [user])
+
+  useEffect(() => {
+    function handleUnauthorized() {
+      setUser(null)
+      setView('login')
+    }
+
+    window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorized)
+    return () => window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized)
+  }, [])
 
   if (!user) {
     if (view === 'register') {

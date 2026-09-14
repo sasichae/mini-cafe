@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { apiFetch } from './api'
 
 export default function AdminDashboard({ user, onLogout }) {
   const [tab, setTab] = useState('dashboard')
@@ -22,8 +23,6 @@ export default function AdminDashboard({ user, onLogout }) {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  const token = localStorage.getItem('mini-cafe-token')
-
   function showError(msg) {
     setError(msg)
     setTimeout(() => setError(''), 2000)
@@ -43,9 +42,7 @@ export default function AdminDashboard({ user, onLogout }) {
 
   async function fetchStats() {
     try {
-      const res = await fetch('http://localhost:3001/api/admin/dashboard', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const res = await apiFetch('/api/admin/dashboard')
       const data = await res.json()
       if (data.success) setStats(data.data)
     } catch {
@@ -57,9 +54,7 @@ export default function AdminDashboard({ user, onLogout }) {
 
   async function fetchOrders() {
     try {
-      const res = await fetch('http://localhost:3001/api/orders', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const res = await apiFetch('/api/orders')
       const data = await res.json()
       if (data.success) setOrders(data.data)
     } catch {
@@ -72,9 +67,7 @@ export default function AdminDashboard({ user, onLogout }) {
   async function fetchProducts() {
     try {
       setProductsLoading(true)
-      const res = await fetch('http://localhost:3001/api/products?show_all=true', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const res = await apiFetch('/api/products?show_all=true')
       const data = await res.json()
       if (data.success) setProducts(data.data)
     } catch {
@@ -86,9 +79,7 @@ export default function AdminDashboard({ user, onLogout }) {
 
   async function fetchCategories() {
     try {
-      const res = await fetch('http://localhost:3001/api/categories', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const res = await apiFetch('/api/categories')
       const data = await res.json()
       if (data.success) setCategories(data.data)
     } catch {
@@ -98,12 +89,9 @@ export default function AdminDashboard({ user, onLogout }) {
 
   async function toggleAvailability(productId, currentStatus) {
     try {
-      const res = await fetch(`http://localhost:3001/api/products/${productId}/availability`, {
+      const res = await apiFetch(`/api/products/${productId}/availability`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ is_available: !currentStatus })
       })
       const data = await res.json()
@@ -154,9 +142,8 @@ export default function AdminDashboard({ user, onLogout }) {
     if (!window.confirm('ต้องการลบสินค้านี้ใช่หรือไม่?')) return
 
     try {
-      const res = await fetch(`http://localhost:3001/api/products/${productId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
+      const res = await apiFetch(`/api/products/${productId}`, {
+        method: 'DELETE'
       })
       const data = await res.json()
 
@@ -197,15 +184,12 @@ export default function AdminDashboard({ user, onLogout }) {
       }
 
       const url = editingProduct
-        ? `http://localhost:3001/api/products/${editingProduct.product_id}`
-        : 'http://localhost:3001/api/products'
+        ? `/api/products/${editingProduct.product_id}`
+        : '/api/products'
 
-      const res = await fetch(url, {
+      const res = await apiFetch(url, {
         method: editingProduct ? 'PUT' : 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       })
 
@@ -229,12 +213,9 @@ export default function AdminDashboard({ user, onLogout }) {
 
   async function updateOrderStatus(orderId, newStatus) {
     try {
-      const res = await fetch(`http://localhost:3001/api/orders/${orderId}/status`, {
+      const res = await apiFetch(`/api/orders/${orderId}/status`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
       })
       const data = await res.json()
@@ -297,29 +278,72 @@ export default function AdminDashboard({ user, onLogout }) {
         </div>
       </header>
 
-      <nav className="admin-tabs">
-        <button
-          type="button"
-          className={`admin-tab ${tab === 'dashboard' ? 'active' : ''}`}
-          onClick={() => setTab('dashboard')}
-        >
-          Dashboard
-        </button>
-        <button
-          type="button"
-          className={`admin-tab ${tab === 'orders' ? 'active' : ''}`}
-          onClick={() => setTab('orders')}
-        >
-          Orders
-        </button>
-        <button
-          type="button"
-          className={`admin-tab ${tab === 'products' ? 'active' : ''}`}
-          onClick={() => setTab('products')}
-        >
-          Products
-        </button>
-      </nav>
+      <div className="admin-layout">
+        <nav className="admin-sidebar" aria-label="Admin">
+          <button
+            type="button"
+            className={`sidebar-item ${tab === 'dashboard' ? 'active' : ''}`}
+            onClick={() => setTab('dashboard')}
+          >
+            <svg
+              className="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+            </svg>
+            <span>Dashboard</span>
+          </button>
+          <button
+            type="button"
+            className={`sidebar-item ${tab === 'orders' ? 'active' : ''}`}
+            onClick={() => setTab('orders')}
+          >
+            <svg
+              className="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+              <rect x="9" y="3" width="6" height="4" rx="1" />
+              <path d="m9 14 2 2 4-4" />
+            </svg>
+            <span>Orders</span>
+          </button>
+          <button
+            type="button"
+            className={`sidebar-item ${tab === 'products' ? 'active' : ''}`}
+            onClick={() => setTab('products')}
+          >
+            <svg
+              className="sidebar-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z" />
+              <circle cx="7" cy="7" r="1.2" />
+            </svg>
+            <span>Products</span>
+          </button>
+        </nav>
 
       <main className="admin-main">
         {error && (
@@ -686,6 +710,7 @@ export default function AdminDashboard({ user, onLogout }) {
           </div>
         )}
       </main>
+      </div>
     </div>
   )
 }

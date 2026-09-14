@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { apiFetch } from './api'
 
 export default function Order({ user, onLogout }) {
   const [categories, setCategories] = useState([])
@@ -9,8 +10,6 @@ export default function Order({ user, onLogout }) {
   const [orderLoading, setOrderLoading] = useState(false)
   const [orderError, setOrderError] = useState('')
   const [orderSuccess, setOrderSuccess] = useState(null)
-
-  const token = localStorage.getItem('mini-cafe-token')
 
   useEffect(() => {
     fetchCategories()
@@ -27,9 +26,7 @@ export default function Order({ user, onLogout }) {
 
   async function fetchCategories() {
     try {
-      const res = await fetch('http://localhost:3001/api/categories', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const res = await apiFetch('/api/categories')
       const data = await res.json()
       if (data.success) setCategories(data.data)
     } catch (error) {
@@ -41,11 +38,9 @@ export default function Order({ user, onLogout }) {
     try {
       setLoading(true)
       const url = categoryId
-        ? `http://localhost:3001/api/products?category_id=${categoryId}`
-        : 'http://localhost:3001/api/products'
-      const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+        ? `/api/products?category_id=${categoryId}`
+        : '/api/products'
+      const res = await apiFetch(url)
       const data = await res.json()
       if (data.success) setProducts(data.data)
     } catch (error) {
@@ -101,12 +96,9 @@ export default function Order({ user, onLogout }) {
         quantity: item.quantity
       }))
 
-      const res = await fetch('http://localhost:3001/api/orders', {
+      const res = await apiFetch('/api/orders', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ items })
       })
 
