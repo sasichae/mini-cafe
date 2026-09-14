@@ -728,10 +728,10 @@ export default function AdminDashboard({ user, onLogout }) {
                   <div className="flex gap-2 pt-2">
                     <button
                       type="button"
-                      className="flex-1 py-2.5 px-0 border-none rounded-lg bg-[#2ECC71] text-white text-sm font-bold cursor-pointer transition-opacity hover:opacity-85"
+                      className="flex-1 py-2.5 px-0 border-none rounded-lg bg-[#2ECC71] text-white text-sm font-bold cursor-pointer transition-opacity hover:opacity-85 flex items-center justify-center gap-2"
                       onClick={saveProduct}
                       disabled={formLoading}
-                      title="บันทึก"
+                      title="ยืนยัน"
                     >
                       {formLoading ? (
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="spin">
@@ -744,10 +744,11 @@ export default function AdminDashboard({ user, onLogout }) {
                           <polyline points="7 3 7 8 15 8" />
                         </svg>
                       )}
+                      {!formLoading && 'ยืนยัน'}
                     </button>
                     <button
                       type="button"
-                      className="flex-1 py-2.5 px-0 border-none rounded-lg bg-[#E74C3C] text-white text-sm font-bold cursor-pointer transition-opacity hover:opacity-85"
+                      className="flex-1 py-2.5 px-0 border-none rounded-lg bg-[#E74C3C] text-white text-sm font-bold cursor-pointer transition-opacity hover:opacity-85 flex items-center justify-center gap-2"
                       onClick={closeProductForm}
                       title="ยกเลิก"
                     >
@@ -756,6 +757,7 @@ export default function AdminDashboard({ user, onLogout }) {
                         <line x1="15" y1="9" x2="9" y2="15" />
                         <line x1="9" y1="9" x2="15" y2="15" />
                       </svg>
+                      ยกเลิก
                     </button>
                   </div>
                 </div>
