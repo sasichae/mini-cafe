@@ -370,7 +370,9 @@ export default function AdminDashboard({ user, onLogout }) {
 
           {tab === 'orders' && (
             <section className="flex flex-col gap-4">
-              <h2 className="m-0 mb-4 text-lg font-semibold text-espresso">รายการ Order ล่าสุด</h2>
+              <div className="flex items-center justify-between gap-4">
+                <h2 className="m-0 text-lg font-semibold text-espresso">รายการ Order ล่าสุด</h2>
+              </div>
 
               {ordersLoading ? (
                 <p className="col-span-full text-center py-10 text-mocha">Loading...</p>
