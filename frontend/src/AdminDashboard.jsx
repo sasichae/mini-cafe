@@ -4,16 +4,22 @@ export default function AdminDashboard({ user, onLogout }) {
   const [tab, setTab] = useState('dashboard')
   const [stats, setStats] = useState(null)
   const [orders, setOrders] = useState([])
+  const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState([])
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [loading, setLoading] = useState(true)
   const [ordersLoading, setOrdersLoading] = useState(true)
+  const [productsLoading, setProductsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
   const token = localStorage.getItem('mini-cafe-token')
 
   useEffect(() => {
     fetchStats()
     fetchOrders()
+    fetchProducts()
+    fetchCategories()
   }, [])
 
   async function fetchStats() {
@@ -41,6 +47,60 @@ export default function AdminDashboard({ user, onLogout }) {
       setError('ไม่สามารถโหลดรายการ Order ได้')
     } finally {
       setOrdersLoading(false)
+    }
+  }
+
+  async function fetchProducts() {
+    try {
+      setProductsLoading(true)
+      const res = await fetch('http://localhost:3001/api/products?show_all=true', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      if (data.success) setProducts(data.data)
+    } catch {
+      setError('ไม่สามารถโหลดรายการสินค้าได้')
+    } finally {
+      setProductsLoading(false)
+    }
+  }
+
+  async function fetchCategories() {
+    try {
+      const res = await fetch('http://localhost:3001/api/categories', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      if (data.success) setCategories(data.data)
+    } catch {
+      setCategories([])
+    }
+  }
+
+  async function toggleAvailability(productId, currentStatus) {
+    try {
+      const res = await fetch(`http://localhost:3001/api/products/${productId}/availability`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ is_available: !currentStatus })
+      })
+      const data = await res.json()
+      if (data.success) {
+        setProducts(prev =>
+          prev.map(p =>
+            p.product_id === productId
+              ? { ...p, is_available: !currentStatus }
+              : p
+          )
+        )
+        setSuccess(data.message)
+        setTimeout(() => setSuccess(''), 2000)
+      }
+    } catch {
+      setError('ไม่สามารถเปลี่ยนสถานะสินค้าได้')
     }
   }
 
@@ -142,6 +202,9 @@ export default function AdminDashboard({ user, onLogout }) {
         {error && (
           <p className="order-error" role="alert">{error}</p>
         )}
+        {success && (
+          <p className="success-message" role="status">{success}</p>
+        )}
 
         {/* Dashboard Tab */}
         {tab === 'dashboard' && (
@@ -239,7 +302,55 @@ export default function AdminDashboard({ user, onLogout }) {
         {/* Products Tab */}
         {tab === 'products' && (
           <section className="products-section">
-            <p className="empty-text">Products Management - Coming Soon</p>
+            <h2 className="section-title">รายการสินค้า</h2>
+
+            {productsLoading ? (
+              <p className="loading-text">Loading...</p>
+            ) : products.length === 0 ? (
+              <p className="empty-text">ยังไม่มีสินค้า</p>
+            ) : (
+              <div className="orders-table-wrap">
+                <table className="orders-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>ชื่อสินค้า</th>
+                      <th>ราคา</th>
+                      <th>หมวดหมู่</th>
+                      <th>สถานะ</th>
+                      <th>การดำเนินการ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.map(product => {
+                      const category = categories.find(c => c.category_id === product.category_id)
+                      return (
+                        <tr key={product.product_id}>
+                          <td className="order-id-cell">{product.product_id}</td>
+                          <td>{product.name}</td>
+                          <td className="price-cell">฿{product.price}</td>
+                          <td>{category ? category.name : '-'}</td>
+                          <td>
+                            <span className={`status-badge ${product.is_available ? 'status-completed' : 'status-cancelled'}`}>
+                              {product.is_available ? 'เปิดขาย' : 'ปิดขาย'}
+                            </span>
+                          </td>
+                          <td>
+                            <button
+                              type="button"
+                              className={`detail-button ${product.is_available ? 'cancel-button' : 'complete-button'}`}
+                              onClick={() => toggleAvailability(product.product_id, product.is_available)}
+                            >
+                              {product.is_available ? 'ปิดขาย' : 'เปิดขาย'}
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </section>
         )}
 
