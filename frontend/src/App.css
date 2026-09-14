@@ -489,6 +489,36 @@
   background: #3a2819;
 }
 
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--white);
+}
+
+.admin-tab {
+  padding: 12px 20px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--mocha);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-tab:hover {
+  color: var(--espresso);
+  background: var(--cream);
+}
+
+.admin-tab.active {
+  color: var(--espresso);
+  border-bottom-color: var(--caramel);
+}
+
 .admin-main {
   flex: 1;
   display: flex;

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 
 export default function AdminDashboard({ user, onLogout }) {
+  const [tab, setTab] = useState('dashboard')
   const [stats, setStats] = useState(null)
   const [orders, setOrders] = useState([])
   const [selectedOrder, setSelectedOrder] = useState(null)
@@ -113,98 +114,136 @@ export default function AdminDashboard({ user, onLogout }) {
         </div>
       </header>
 
+      <nav className="admin-tabs">
+        <button
+          type="button"
+          className={`admin-tab ${tab === 'dashboard' ? 'active' : ''}`}
+          onClick={() => setTab('dashboard')}
+        >
+          Dashboard
+        </button>
+        <button
+          type="button"
+          className={`admin-tab ${tab === 'orders' ? 'active' : ''}`}
+          onClick={() => setTab('orders')}
+        >
+          Orders
+        </button>
+        <button
+          type="button"
+          className={`admin-tab ${tab === 'products' ? 'active' : ''}`}
+          onClick={() => setTab('products')}
+        >
+          Products
+        </button>
+      </nav>
+
       <main className="admin-main">
         {error && (
           <p className="order-error" role="alert">{error}</p>
         )}
 
-        {loading ? (
-          <p className="loading-text">Loading...</p>
-        ) : stats && (
-          <section className="stats-grid">
-            <div className="stat-card">
-              <p className="stat-label"> Orders วันนี้</p>
-              <p className="stat-value">{stats.orders.today}</p>
-              <p className="stat-sub">฿{stats.revenue.today}</p>
-            </div>
-            <div className="stat-card">
-              <p className="stat-label">Orders ทั้งหมด</p>
-              <p className="stat-value">{stats.orders.total}</p>
-              <p className="stat-sub">฿{stats.revenue.total}</p>
-            </div>
-            <div className="stat-card">
-              <p className="stat-label">รอดำเนินการ</p>
-              <p className="stat-value stat-pending">{stats.status.pending}</p>
-            </div>
-            <div className="stat-card">
-              <p className="stat-label">กำลังเตรียม</p>
-              <p className="stat-value stat-preparing">{stats.status.preparing}</p>
-            </div>
-            <div className="stat-card">
-              <p className="stat-label">เสร็จสิ้น</p>
-              <p className="stat-value stat-completed">{stats.status.completed}</p>
-            </div>
-            <div className="stat-card">
-              <p className="stat-label">สินค้า / ผู้ใช้</p>
-              <p className="stat-value">{stats.products.total}</p>
-              <p className="stat-sub">{stats.users} ผู้ใช้</p>
-            </div>
+        {/* Dashboard Tab */}
+        {tab === 'dashboard' && (
+          loading ? (
+            <p className="loading-text">Loading...</p>
+          ) : stats && (
+            <section className="stats-grid">
+              <div className="stat-card">
+                <p className="stat-label">Orders วันนี้</p>
+                <p className="stat-value">{stats.orders.today}</p>
+                <p className="stat-sub">฿{stats.revenue.today}</p>
+              </div>
+              <div className="stat-card">
+                <p className="stat-label">Orders ทั้งหมด</p>
+                <p className="stat-value">{stats.orders.total}</p>
+                <p className="stat-sub">฿{stats.revenue.total}</p>
+              </div>
+              <div className="stat-card">
+                <p className="stat-label">รอดำเนินการ</p>
+                <p className="stat-value stat-pending">{stats.status.pending}</p>
+              </div>
+              <div className="stat-card">
+                <p className="stat-label">กำลังเตรียม</p>
+                <p className="stat-value stat-preparing">{stats.status.preparing}</p>
+              </div>
+              <div className="stat-card">
+                <p className="stat-label">เสร็จสิ้น</p>
+                <p className="stat-value stat-completed">{stats.status.completed}</p>
+              </div>
+              <div className="stat-card">
+                <p className="stat-label">สินค้า / ผู้ใช้</p>
+                <p className="stat-value">{stats.products.total}</p>
+                <p className="stat-sub">{stats.users} ผู้ใช้</p>
+              </div>
+            </section>
+          )
+        )}
+
+        {/* Orders Tab */}
+        {tab === 'orders' && (
+          <section className="orders-section">
+            <h2 className="section-title">รายการ Order ล่าสุด</h2>
+
+            {ordersLoading ? (
+              <p className="loading-text">Loading...</p>
+            ) : orders.length === 0 ? (
+              <p className="empty-text">ยังไม่มี Order</p>
+            ) : (
+              <div className="orders-table-wrap">
+                <table className="orders-table">
+                  <thead>
+                    <tr>
+                      <th>Order</th>
+                      <th>ลูกค้า</th>
+                      <th>รายการ</th>
+                      <th>ยอดรวม</th>
+                      <th>สถานะ</th>
+                      <th>เวลา</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.map(order => (
+                      <tr key={order.order_id}>
+                        <td className="order-id-cell">#{order.order_id}</td>
+                        <td>{order.user_name || order.username}</td>
+                        <td className="items-cell">
+                          {order.items.map(i => `${i.product_name} x${i.quantity}`).join(', ')}
+                        </td>
+                        <td className="price-cell">฿{order.total_amount}</td>
+                        <td>
+                          <span className={`status-badge ${getStatusClass(order.status)}`}>
+                            {getStatusLabel(order.status)}
+                          </span>
+                        </td>
+                        <td className="time-cell">{formatDateTime(order.created_at)}</td>
+                        <td>
+                          <button
+                            type="button"
+                            className="detail-button"
+                            onClick={() => setSelectedOrder(order)}
+                          >
+                            ดูรายละเอียด
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </section>
         )}
 
-        <section className="orders-section">
-          <h2 className="section-title">รายการ Order ล่าสุด</h2>
+        {/* Products Tab */}
+        {tab === 'products' && (
+          <section className="products-section">
+            <p className="empty-text">Products Management - Coming Soon</p>
+          </section>
+        )}
 
-          {ordersLoading ? (
-            <p className="loading-text">Loading...</p>
-          ) : orders.length === 0 ? (
-            <p className="empty-text">ยังไม่มี Order</p>
-          ) : (
-            <div className="orders-table-wrap">
-              <table className="orders-table">
-                <thead>
-                  <tr>
-                    <th>Order</th>
-                    <th>ลูกค้า</th>
-                    <th>รายการ</th>
-                    <th>ยอดรวม</th>
-                    <th>สถานะ</th>
-                    <th>เวลา</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map(order => (
-                    <tr key={order.order_id}>
-                      <td className="order-id-cell">#{order.order_id}</td>
-                      <td>{order.user_name || order.username}</td>
-                      <td className="items-cell">
-                        {order.items.map(i => `${i.product_name} x${i.quantity}`).join(', ')}
-                      </td>
-                      <td className="price-cell">฿{order.total_amount}</td>
-                      <td>
-                        <span className={`status-badge ${getStatusClass(order.status)}`}>
-                          {getStatusLabel(order.status)}
-                        </span>
-                      </td>
-                      <td className="time-cell">{formatDateTime(order.created_at)}</td>
-                      <td>
-                        <button
-                          type="button"
-                          className="detail-button"
-                          onClick={() => setSelectedOrder(order)}
-                        >
-                          ดูรายละเอียด
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
-
+        {/* Order Detail Modal */}
         {selectedOrder && (
           <div className="modal-overlay" onClick={() => setSelectedOrder(null)}>
             <div className="modal-card" onClick={e => e.stopPropagation()}>
