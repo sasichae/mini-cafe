@@ -47,6 +47,9 @@ services:
       DB_PASSWORD: cafe123
       DB_NAME: mini_cafe
       JWT_SECRET: 413f5523001e34828a7a6c88dba392c050cca0814408817a6fd4660a465568f9cf7d8fcdf103d4c01eac4fdd00065005ab93dad6cd5939489308dd57ea51bbb0
+    volumes:
+      - ./backend:/app
+      - backend-node-modules:/app/node_modules
     depends_on:
       mysql:
         condition: service_healthy
@@ -56,9 +59,14 @@ services:
     container_name: mini-cafe-frontend
     restart: unless-stopped
     ports:
-      - "5173:80"
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend-node-modules:/app/node_modules
     depends_on:
       - backend
 
 volumes:
   mysql-data:
+  backend-node-modules:
+  frontend-node-modules:

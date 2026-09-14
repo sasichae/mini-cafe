@@ -86,3 +86,39 @@ INSERT INTO products (category_id, name, price, description, image, is_available
   (5, 'Matcha', 70.00, 'Matcha ice cream', '/images/matcha-icecream.svg', TRUE),
   (5, 'Cookie Dough', 75.00, 'Cookie dough ice cream', '/images/cookie-dough.svg', TRUE)
 ON DUPLICATE KEY UPDATE name = name;
+
+-- Sample Orders
+INSERT INTO orders (user_id, total_amount, status, created_at) VALUES
+  (2, 270.00, 'completed', NOW() - INTERVAL 3 DAY),
+  (2, 190.00, 'completed', NOW() - INTERVAL 2 DAY),
+  (2, 105.00, 'pending', NOW() - INTERVAL 1 HOUR),
+  (2, 215.00, 'preparing', NOW() - INTERVAL 30 MINUTE),
+  (2, 105.00, 'cancelled', NOW() - INTERVAL 2 DAY);
+
+-- Order Items
+-- Order 1: Espresso + Latte + Croissant
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, total) VALUES
+  (1, 1, 1, 80.00, 80.00),
+  (1, 2, 1, 95.00, 95.00),
+  (1, 15, 2, 55.00, 110.00);
+
+-- Order 2: Americano x2 + Muffin
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, total) VALUES
+  (2, 26, 2, 75.00, 150.00),
+  (2, 16, 1, 45.00, 45.00);
+
+-- Order 3: Thai Tea + Donut
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, total) VALUES
+  (3, 7, 1, 65.00, 65.00),
+  (3, 17, 1, 40.00, 40.00);
+
+-- Order 4: Mocha + Matcha Latte + Sandwich
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, total) VALUES
+  (4, 5, 1, 105.00, 105.00),
+  (4, 9, 1, 110.00, 110.00),
+  (4, 19, 1, 65.00, 65.00);
+
+-- Order 5: Green Tea + Toast (cancelled)
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, total) VALUES
+  (5, 27, 1, 70.00, 70.00),
+  (5, 18, 1, 35.00, 35.00);
