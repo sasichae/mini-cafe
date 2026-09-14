@@ -338,12 +338,12 @@ export default function AdminDashboard({ user, onLogout }) {
               <div className="stat-card">
                 <p className="stat-label">Orders วันนี้</p>
                 <p className="stat-value">{stats.orders.today}</p>
-                <p className="stat-sub">฿{stats.revenue.today}</p>
+                <p className="stat-sub">฿{Number(stats.revenue.today).toFixed(2)}</p>
               </div>
               <div className="stat-card">
                 <p className="stat-label">Orders ทั้งหมด</p>
                 <p className="stat-value">{stats.orders.total}</p>
-                <p className="stat-sub">฿{stats.revenue.total}</p>
+                <p className="stat-sub">฿{Number(stats.revenue.total).toFixed(2)}</p>
               </div>
               <div className="stat-card">
                 <p className="stat-label">รอดำเนินการ</p>
@@ -397,7 +397,7 @@ export default function AdminDashboard({ user, onLogout }) {
                         <td className="items-cell">
                           {order.items.map(i => `${i.product_name} x${i.quantity}`).join(', ')}
                         </td>
-                        <td className="price-cell">฿{order.total_amount}</td>
+                        <td className="price-cell">฿{Number(order.total_amount).toFixed(2)}</td>
                         <td>
                           <span className={`status-badge ${getStatusClass(order.status)}`}>
                             {getStatusLabel(order.status)}
@@ -460,7 +460,7 @@ export default function AdminDashboard({ user, onLogout }) {
                         <tr key={product.product_id}>
                           <td className="order-id-cell">{product.product_id}</td>
                           <td>{product.name}</td>
-                          <td className="price-cell">฿{product.price}</td>
+                          <td className="price-cell">฿{Number(product.price).toFixed(2)}</td>
                           <td>{category ? category.name : '-'}</td>
                           <td>
                             <span className={`status-badge ${product.is_available ? 'status-completed' : 'status-cancelled'}`}>
@@ -537,14 +537,14 @@ export default function AdminDashboard({ user, onLogout }) {
                     <div key={item.order_item_id || item.product_id} className="modal-item">
                       <span className="modal-item-name">{item.product_name}</span>
                       <span className="modal-item-qty">x{item.quantity}</span>
-                      <span className="modal-item-price">฿{item.total}</span>
+                      <span className="modal-item-price">฿{Number(item.total).toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
 
                 <div className="modal-total">
                   <span>ยอดรวม</span>
-                  <span className="modal-total-price">฿{selectedOrder.total_amount}</span>
+                  <span className="modal-total-price">฿{Number(selectedOrder.total_amount).toFixed(2)}</span>
                 </div>
 
                 <div className="modal-status-actions">

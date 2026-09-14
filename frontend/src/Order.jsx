@@ -157,7 +157,7 @@ export default function Order({ user, onLogout }) {
             </div>
             <h2 className="success-title">สั่งซื้อสำเร็จ!</h2>
             <p className="success-order-id">Order #{orderSuccess.order_id}</p>
-            <p className="success-total">ยอดรวม ฿{orderSuccess.total_amount}</p>
+            <p className="success-total">ยอดรวม ฿{Number(orderSuccess.total_amount).toFixed(2)}</p>
             <p className="success-status">สถานะ: pending</p>
             <button
               type="button"
@@ -227,7 +227,7 @@ export default function Order({ user, onLogout }) {
                   <div className="product-info">
                     <h3 className="product-name">{product.name}</h3>
                     <p className="product-desc">{product.description}</p>
-                    <p className="product-price">฿{product.price}</p>
+                    <p className="product-price">฿{Number(product.price).toFixed(2)}</p>
                   </div>
                   <button
                     type="button"
@@ -254,7 +254,7 @@ export default function Order({ user, onLogout }) {
                   <div key={item.product_id} className="cart-item">
                     <div className="cart-item-info">
                       <span className="cart-item-name">{item.name}</span>
-                      <span className="cart-item-price">฿{item.price * item.quantity}</span>
+                      <span className="cart-item-price">฿{Number(item.price * item.quantity).toFixed(2)}</span>
                     </div>
                     <div className="cart-item-controls">
                       <button
@@ -287,7 +287,7 @@ export default function Order({ user, onLogout }) {
               <div className="cart-footer">
                 <div className="cart-total">
                   <span>Total</span>
-                  <span className="total-price">฿{getTotalAmount()}</span>
+                  <span className="total-price">฿{Number(getTotalAmount()).toFixed(2)}</span>
                 </div>
                 {orderError && (
                   <p className="order-error" role="alert">{orderError}</p>
