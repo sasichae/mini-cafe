@@ -1,12 +1,14 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './Login.css'
 
-export default function Register({ onBackToLogin }) {
+export default function Register() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const navigate = useNavigate()
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -57,7 +59,7 @@ export default function Register({ onBackToLogin }) {
             <button
               type="button"
               className="login-button"
-              onClick={onBackToLogin}
+              onClick={() => navigate('/login')}
             >
               กลับไปเข้าสู่ระบบ
             </button>
@@ -160,7 +162,7 @@ export default function Register({ onBackToLogin }) {
           <button
             type="button"
             className="link-button"
-            onClick={onBackToLogin}
+            onClick={() => navigate('/login')}
           >
             เข้าสู่ระบบ
           </button>

@@ -1,11 +1,13 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './Login.css'
 
-export default function Login({ onLogin, onShowRegister }) {
+export default function Login({ onLogin }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -35,6 +37,7 @@ export default function Login({ onLogin, onShowRegister }) {
 
       localStorage.setItem('mini-cafe-token', data.token)
       onLogin(data.user)
+      navigate(data.user.role === 'admin' ? '/admin' : '/')
     } catch {
       setError('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้')
       setLoading(false)
@@ -122,7 +125,7 @@ export default function Login({ onLogin, onShowRegister }) {
           <button
             type="button"
             className="link-button"
-            onClick={onShowRegister}
+            onClick={() => navigate('/register')}
           >
             สมัครสมาชิก
           </button>

@@ -633,7 +633,7 @@
 
 .orders-table th {
   padding: 14px 16px;
-  text-align: left;
+  text-align: center;
   font-weight: 600;
   color: var(--mocha);
   background: var(--cream);

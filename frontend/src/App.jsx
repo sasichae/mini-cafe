@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import Login from './Login'
 import Register from './Register'
 import Order from './Order'
@@ -15,9 +16,26 @@ function loadSession() {
   }
 }
 
+function ProtectedRoute({ user, allowedRoles, children }) {
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/" replace />
+  }
+  return children
+}
+
+function PublicRoute({ user, children }) {
+  if (user) {
+    return <Navigate to={user.role === 'admin' ? '/admin' : '/'} replace />
+  }
+  return children
+}
+
 export default function App() {
   const [user, setUser] = useState(loadSession)
-  const [view, setView] = useState('login')
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (user) {
@@ -30,23 +48,53 @@ export default function App() {
   useEffect(() => {
     function handleUnauthorized() {
       setUser(null)
-      setView('login')
+      navigate('/login')
     }
 
     window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorized)
     return () => window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized)
-  }, [])
+  }, [navigate])
 
-  if (!user) {
-    if (view === 'register') {
-      return <Register onBackToLogin={() => setView('login')} />
-    }
-    return <Login onLogin={setUser} onShowRegister={() => setView('register')} />
+  function handleLogout() {
+    setUser(null)
+    navigate('/login')
   }
 
-  if (user.role === 'admin') {
-    return <AdminDashboard user={user} onLogout={() => setUser(null)} />
-  }
-
-  return <Order user={user} onLogout={() => setUser(null)} />
+  return (
+    <Routes>
+      <Route
+        path="/login"
+        element={
+          <PublicRoute user={user}>
+            <Login onLogin={setUser} />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <PublicRoute user={user}>
+            <Register />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute user={user} allowedRoles={['staff']}>
+            <Order user={user} onLogout={handleLogout} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute user={user} allowedRoles={['admin']}>
+            <AdminDashboard user={user} onLogout={handleLogout} />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  )
 }
