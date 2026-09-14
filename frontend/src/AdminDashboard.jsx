@@ -381,31 +381,31 @@ export default function AdminDashboard({ user, onLogout }) {
                   <table className="w-full border-collapse text-sm">
                     <thead>
                       <tr>
-                        <th className="px-4 py-3.5 text-left font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">Order</th>
-                        <th className="px-4 py-3.5 text-left font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">ลูกค้า</th>
-                        <th className="px-4 py-3.5 text-left font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">รายการ</th>
-                        <th className="px-4 py-3.5 text-right font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">ยอดรวม</th>
+                        <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">Order</th>
+                        <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">ลูกค้า</th>
+                        <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">รายการ</th>
+                        <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">ยอดรวม</th>
                         <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">สถานะ</th>
-                        <th className="px-4 py-3.5 text-left font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">เวลา</th>
-                        <th className="px-4 py-3.5 text-right font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap"></th>
+                        <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">เวลา</th>
+                        <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap"></th>
                       </tr>
                     </thead>
                     <tbody>
                       {orders.map(order => (
                         <tr key={order.order_id} className="hover:bg-cream">
-                          <td className="px-4 py-3 border-b border-border text-espresso align-middle font-bold text-caramel whitespace-nowrap text-left">#{order.order_id}</td>
-                          <td className="px-4 py-3 border-b border-border text-espresso align-middle text-left">{order.user_name || order.username}</td>
-                          <td className="px-4 py-3 border-b border-border text-espresso align-middle max-w-[250px] overflow-hidden text-ellipsis whitespace-nowrap text-mocha text-[13px] text-left">
+                          <td className="px-4 py-3 border-b border-border text-espresso align-middle font-bold text-caramel whitespace-nowrap text-center">#{order.order_id}</td>
+                          <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">{order.user_name || order.username}</td>
+                          <td className="px-4 py-3 border-b border-border text-espresso align-middle max-w-[250px] overflow-hidden text-ellipsis whitespace-nowrap text-mocha text-[13px] text-center">
                             {order.items.map(i => `${i.product_name} x${i.quantity}`).join(', ')}
                           </td>
-                          <td className="px-4 py-3 border-b border-border text-espresso align-middle font-semibold whitespace-nowrap text-right">฿{Number(order.total_amount).toFixed(2)}</td>
+                          <td className="px-4 py-3 border-b border-border text-espresso align-middle font-semibold whitespace-nowrap text-center">฿{Number(order.total_amount).toFixed(2)}</td>
                           <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">
                             <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap ${getStatusClass(order.status)}`}>
                               {getStatusLabel(order.status)}
                             </span>
                           </td>
-                          <td className="px-4 py-3 border-b border-border text-espresso align-middle whitespace-nowrap text-[13px] text-mocha text-left">{formatDateTime(order.created_at)}</td>
-                          <td className="px-4 py-3 border-b border-border text-espresso align-middle text-right">
+                          <td className="px-4 py-3 border-b border-border text-espresso align-middle whitespace-nowrap text-[13px] text-mocha text-center">{formatDateTime(order.created_at)}</td>
+                          <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">
                             <button
                               type="button"
                               className="px-3 py-1.5 border-[1.5px] border-border rounded-md bg-transparent text-espresso text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all hover:border-caramel hover:text-caramel"
