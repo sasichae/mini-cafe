@@ -45,8 +45,8 @@ router.get('/:id', authenticate, async (req, res) => {
               u.username
        FROM orders o
        LEFT JOIN users u ON o.user_id = u.user_id
-       WHERE o.order_id = ?`,
-      [req.params.id]
+       WHERE o.order_id = ? AND (o.user_id = ? OR ? = 'admin')`,
+      [req.params.id, req.user.id, req.user.role]
     )
 
     if (orders.length === 0) {
