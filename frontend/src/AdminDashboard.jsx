@@ -179,7 +179,7 @@ export default function AdminDashboard({ user, onLogout }) {
                       <td className="order-id-cell">#{order.order_id}</td>
                       <td>{order.user_name || order.username}</td>
                       <td className="items-cell">
-                        {order.items.map(i => i.product_name).join(', ')}
+                        {order.items.map(i => `${i.product_name} x${i.quantity}`).join(', ')}
                       </td>
                       <td className="price-cell">฿{order.total_amount}</td>
                       <td>
