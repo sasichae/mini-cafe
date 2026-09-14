@@ -24,6 +24,16 @@ export default function AdminDashboard({ user, onLogout }) {
 
   const token = localStorage.getItem('mini-cafe-token')
 
+  function showError(msg) {
+    setError(msg)
+    setTimeout(() => setError(''), 2000)
+  }
+
+  function showSuccess(msg) {
+    setSuccess(msg)
+    setTimeout(() => setSuccess(''), 2000)
+  }
+
   useEffect(() => {
     fetchStats()
     fetchOrders()
@@ -39,7 +49,7 @@ export default function AdminDashboard({ user, onLogout }) {
       const data = await res.json()
       if (data.success) setStats(data.data)
     } catch {
-      setError('ไม่สามารถโหลดข้อมูลได้')
+      showError('ไม่สามารถโหลดข้อมูลได้')
     } finally {
       setLoading(false)
     }
@@ -53,7 +63,7 @@ export default function AdminDashboard({ user, onLogout }) {
       const data = await res.json()
       if (data.success) setOrders(data.data)
     } catch {
-      setError('ไม่สามารถโหลดรายการ Order ได้')
+      showError('ไม่สามารถโหลดรายการ Order ได้')
     } finally {
       setOrdersLoading(false)
     }
@@ -68,7 +78,7 @@ export default function AdminDashboard({ user, onLogout }) {
       const data = await res.json()
       if (data.success) setProducts(data.data)
     } catch {
-      setError('ไม่สามารถโหลดรายการสินค้าได้')
+      showError('ไม่สามารถโหลดรายการสินค้าได้')
     } finally {
       setProductsLoading(false)
     }
@@ -105,11 +115,10 @@ export default function AdminDashboard({ user, onLogout }) {
               : p
           )
         )
-        setSuccess(data.message)
-        setTimeout(() => setSuccess(''), 2000)
+        showSuccess(data.message)
       }
     } catch {
-      setError('ไม่สามารถเปลี่ยนสถานะสินค้าได้')
+      showError('ไม่สามารถเปลี่ยนสถานะสินค้าได้')
     }
   }
 
@@ -186,8 +195,7 @@ export default function AdminDashboard({ user, onLogout }) {
         return
       }
 
-      setSuccess(data.message)
-      setTimeout(() => setSuccess(''), 2000)
+      showSuccess(data.message)
       closeProductForm()
       fetchProducts()
     } catch {
@@ -217,7 +225,7 @@ export default function AdminDashboard({ user, onLogout }) {
         }
       }
     } catch {
-      setError('ไม่สามารถอัปเดตสถานะได้')
+      showError('ไม่สามารถอัปเดตสถานะได้')
     }
   }
 
