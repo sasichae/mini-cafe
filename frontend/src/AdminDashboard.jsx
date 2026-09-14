@@ -150,6 +150,28 @@ export default function AdminDashboard({ user, onLogout }) {
     setShowProductForm(false)
   }
 
+  async function deleteProduct(productId) {
+    if (!window.confirm('ต้องการลบสินค้านี้ใช่หรือไม่?')) return
+
+    try {
+      const res = await fetch(`http://localhost:3001/api/products/${productId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+
+      if (!data.success) {
+        showError(data.message)
+        return
+      }
+
+      showSuccess(data.message)
+      fetchProducts()
+    } catch {
+      showError('ไม่สามารถลบสินค้าได้')
+    }
+  }
+
   async function saveProduct() {
     if (!formName.trim() || !formPrice || !formCategoryId) {
       setFormError('กรุณากรอกชื่อสินค้า, ราคา, และหมวดหมู่')
@@ -445,13 +467,20 @@ export default function AdminDashboard({ user, onLogout }) {
                               {product.is_available ? 'เปิดขาย' : 'ปิดขาย'}
                             </span>
                           </td>
-                          <td className="actions-cell">
+                           <td className="actions-cell">
                             <button
                               type="button"
                               className="detail-button"
                               onClick={() => openEditProductForm(product)}
                             >
                               แก้ไข
+                            </button>
+                            <button
+                              type="button"
+                              className="detail-button cancel-button"
+                              onClick={() => deleteProduct(product.product_id)}
+                            >
+                              ลบ
                             </button>
                             <button
                               type="button"

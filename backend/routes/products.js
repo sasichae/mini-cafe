@@ -130,6 +130,41 @@ router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
   }
 })
 
+// DELETE /api/products/:id — ลบสินค้า (Admin เท่านั้น)
+router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
+  const { id } = req.params
+
+  try {
+    const [existing] = await pool.execute(
+      'SELECT product_id FROM products WHERE product_id = ?',
+      [id]
+    )
+
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'ไม่พบสินค้า' })
+    }
+
+    const [orders] = await pool.execute(
+      'SELECT COUNT(*) AS cnt FROM order_items WHERE product_id = ?',
+      [id]
+    )
+
+    if (orders[0].cnt > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'ไม่สามารถลบสินค้าได้ เนื่องจากมีรายการสั่งซื้อที่เกี่ยวข้อง'
+      })
+    }
+
+    await pool.execute('DELETE FROM products WHERE product_id = ?', [id])
+
+    res.json({ success: true, message: 'ลบสินค้าสำเร็จ' })
+  } catch (error) {
+    console.error('Delete product error:', error)
+    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในเซิร์ฟเวอร์' })
+  }
+})
+
 // PATCH /api/products/:id/availability — เปลี่ยนสถานะเปิด/ปิดขาย (Admin เท่านั้น)
 router.patch('/:id/availability', authenticate, authorize('admin'), async (req, res) => {
   const { id } = req.params
