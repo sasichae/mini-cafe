@@ -274,13 +274,41 @@ export default function Order({ user, onLogout }) {
             <p className="text-[11px] font-bold tracking-[0.12em] text-rust">MINI CAFE</p>
             <h1 className="font-display text-[34px] font-semibold leading-tight text-ink">สั่งออเดอร์</h1>
           </div>
-          <div className="flex items-center gap-2.5 text-sm text-ink-muted">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <path d="M16 10a4 4 0 0 1-8 0" />
-            </svg>
-            <span>{totalItemCount} รายการในตะกร้า</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5 text-sm text-ink-muted">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
+              <span>{totalItemCount} รายการในตะกร้า</span>
+            </div>
+            {user.role === 'admin' && (
+              <button
+                type="button"
+                onClick={() => navigate('/admin')}
+                className="flex items-center gap-1.5 rounded-lg border border-border bg-white px-3 py-1.5 text-[13px] font-medium text-espresso cursor-pointer transition-colors hover:bg-cream-deep"
+                title="เข้าระบบแอดมิน"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </svg>
+                แอดมิน
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onLogout}
+              className="flex items-center justify-center w-8 h-8 rounded-lg border border-border bg-white text-espresso cursor-pointer transition-colors hover:bg-cream-deep"
+              title="ออกจากระบบ"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+            </button>
           </div>
         </div>
         <div className="flex gap-6 overflow-x-auto scrollbar-thin">
