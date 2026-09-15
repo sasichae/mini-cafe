@@ -163,12 +163,12 @@ export default function Order({ user, onLogout }) {
   if (orderSuccess) {
     return (
       <div className="min-h-full bg-cream text-ink">
-        <header className="border-b border-border px-10 py-6">
+        <header className="border-b border-border px-10 pb-4 pt-6">
           <p className="text-[11px] font-bold tracking-[0.12em] text-rust">MINI CAFE</p>
           <h1 className="font-display text-[34px] font-semibold leading-tight text-ink">สั่งออเดอร์</h1>
         </header>
 
-        <main className="flex min-h-[calc(100vh-100px)] items-center justify-center p-10">
+        <main className="flex min-h-[calc(100vh-100px)] items-center justify-center px-10 py-16">
           <div className="text-center">
             <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#2d9d4e]">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -194,9 +194,9 @@ export default function Order({ user, onLogout }) {
 
   return (
     <div className="min-h-full bg-cream text-ink">
-      {/* Header */}
-      <header className="border-b border-border px-10 py-6">
-        <div className="flex flex-wrap items-end justify-between gap-3">
+      {/* Header + Category Tabs — unified */}
+      <header className="px-10">
+        <div className="flex flex-wrap items-end justify-between gap-3 pt-6 pb-4">
           <div>
             <p className="text-[11px] font-bold tracking-[0.12em] text-rust">MINI CAFE</p>
             <h1 className="font-display text-[34px] font-semibold leading-tight text-ink">สั่งออเดอร์</h1>
@@ -210,11 +210,7 @@ export default function Order({ user, onLogout }) {
             <span>{totalItemCount} รายการในตะกร้า</span>
           </div>
         </div>
-      </header>
-
-      {/* Category Tabs */}
-      <div className="px-10 pt-7">
-        <div className="mb-6 flex gap-6 overflow-x-auto border-b border-border scrollbar-thin">
+        <div className="flex gap-6 overflow-x-auto scrollbar-thin">
           <button
             type="button"
             className={`shrink-0 whitespace-nowrap border-b-2 bg-transparent px-0.5 pb-3 text-[15px] transition-colors ${selectedCategory === null ? 'border-rust font-semibold text-ink' : 'border-transparent font-medium text-ink-muted'}`}
@@ -233,7 +229,7 @@ export default function Order({ user, onLogout }) {
             </button>
           ))}
         </div>
-      </div>
+      </header>
 
       {/* Main Content */}
       <div className="flex flex-wrap items-start gap-8 px-10 pb-7">
