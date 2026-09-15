@@ -213,42 +213,79 @@ export default function Order({ user, onLogout }) {
             ))}
           </div>
 
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 overflow-y-auto pr-2">
-            {loading ? (
-              <p className="col-span-full text-center py-10 text-mocha">Loading...</p>
-            ) : products.length === 0 ? (
-              <p className="col-span-full text-center py-10 text-mocha">ไม่มีสินค้า</p>
-            ) : (
-              products.map(product => (
-                <div key={product.product_id} className="flex flex-col justify-between p-4 border border-border rounded-xl bg-white transition-shadow hover:shadow-[0_24px_60px_-18px_rgba(42,28,19,0.3)]">
-                  {product.image && (
-                    <img
-                      className="w-full h-[140px] object-contain rounded-lg mb-3 bg-cream"
-                      src={product.image}
-                      alt={product.name}
-                    />
-                  )}
-                  <div className="flex flex-col gap-1.5">
-                    <h3 className="m-0 text-base font-semibold text-espresso">{product.name}</h3>
-                    <p className="m-0 text-[13px] text-mocha leading-normal">{product.description}</p>
-                    <p className="mt-2 text-lg font-bold text-caramel">฿{Number(product.price).toFixed(2)}</p>
-                  </div>
-                  <button
-                    type="button"
-                    className="mt-3 py-2.5 px-0 border-none rounded-lg bg-espresso text-cream text-sm font-semibold cursor-pointer hover:bg-[#3a2819] transition-colors"
-                    onClick={() => addToCart(product)}
-                    title="เพิ่มลงตะกร้า"
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <circle cx="9" cy="21" r="1" />
-                      <circle cx="20" cy="21" r="1" />
-                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                    </svg>
-                  </button>
-                </div>
-              ))
-            )}
-          </div>
+          {loading ? (
+            <p className="text-center py-10 text-mocha">Loading...</p>
+          ) : products.length === 0 ? (
+            <p className="text-center py-10 text-mocha">ไม่มีสินค้า</p>
+          ) : (
+            <div className="border border-border rounded-xl bg-white">
+              <table className="w-full border-collapse text-sm" style={{ tableLayout: 'fixed' }}>
+                <colgroup>
+                  <col style={{ width: '5%' }} />
+                  <col style={{ width: '8%' }} />
+                  <col style={{ width: '32%' }} />
+                  <col style={{ width: '15%' }} />
+                  <col style={{ width: '20%' }} />
+                  <col style={{ width: '20%' }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border">#</th>
+                    <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border">รูป</th>
+                    <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border">ชื่อสินค้า</th>
+                    <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border">ราคา</th>
+                    <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border">หมวดหมู่</th>
+                    <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border">ดำเนินการ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.map((product, index) => {
+                    const category = categories.find(c => c.category_id === product.category_id)
+                    return (
+                      <tr key={product.product_id} className="hover:bg-cream">
+                        <td className="px-4 py-3 border-b border-border text-espresso align-middle font-bold text-caramel text-center">{index + 1}</td>
+                        <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">
+                          {product.image ? (
+                            <img src={product.image} alt={product.name} className="h-10 w-10 rounded-lg object-cover border border-border/50 mx-auto" />
+                          ) : (
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cream-deep/60 text-mocha/30 mx-auto">
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" />
+                                <circle cx="9" cy="9" r="2" />
+                                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                              </svg>
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center truncate">{product.name}</td>
+                        <td className="px-4 py-3 border-b border-border text-espresso align-middle font-semibold text-center">฿{Number(product.price).toFixed(2)}</td>
+                        <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-cream/80 px-2.5 py-0.5 text-xs font-medium text-mocha">
+                            <span className="h-1.5 w-1.5 rounded-full bg-caramel" />
+                            {category ? category.name : '-'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">
+                          <button
+                            type="button"
+                            className="px-3 py-1.5 border-[1.5px] border-border rounded-md bg-transparent text-espresso text-[13px] font-semibold cursor-pointer transition-all hover:border-caramel hover:text-caramel"
+                            onClick={() => addToCart(product)}
+                            title="เพิ่มลงตะกร้า"
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                              <circle cx="9" cy="21" r="1" />
+                              <circle cx="20" cy="21" r="1" />
+                              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
 
         <aside className="flex flex-col p-5 border border-border rounded-xl bg-white h-fit max-h-[calc(100vh-140px)] sticky top-6">

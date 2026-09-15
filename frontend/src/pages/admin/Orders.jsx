@@ -66,38 +66,38 @@ export default function Orders() {
         ) : orders.length === 0 ? (
           <p className="col-span-full text-center py-10 text-mocha">ยังไม่มี Order</p>
         ) : (
-          <div className="overflow-x-auto border border-border rounded-xl bg-white">
+          <div className="overflow-x-auto border border-warm-beige rounded-xl bg-white">
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr>
-                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">Order</th>
-                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">ลูกค้า</th>
-                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">รายการ</th>
-                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">ยอดรวม</th>
-                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">สถานะ</th>
-                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap">เวลา</th>
-                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border whitespace-nowrap"></th>
+                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-warm-beige whitespace-nowrap">Order</th>
+                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-warm-beige whitespace-nowrap">ลูกค้า</th>
+                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-warm-beige whitespace-nowrap">รายการ</th>
+                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-warm-beige whitespace-nowrap">ยอดรวม</th>
+                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-warm-beige whitespace-nowrap">สถานะ</th>
+                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-warm-beige whitespace-nowrap">เวลา</th>
+                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-warm-beige whitespace-nowrap"></th>
                 </tr>
               </thead>
               <tbody>
                 {orders.map(order => (
                   <tr key={order.order_id} className="hover:bg-cream">
-                    <td className="px-4 py-3 border-b border-border text-espresso align-middle font-bold text-caramel whitespace-nowrap text-center">#{order.order_id}</td>
-                    <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">{order.user_name || order.username}</td>
-                    <td className="px-4 py-3 border-b border-border text-espresso align-middle max-w-[250px] overflow-hidden text-ellipsis whitespace-nowrap text-mocha text-[13px] text-center">
+                    <td className="px-4 py-3 border-b border-warm-beige text-espresso align-middle font-bold text-caramel whitespace-nowrap text-center">#{order.order_id}</td>
+                    <td className="px-4 py-3 border-b border-warm-beige text-espresso align-middle text-center">{order.user_name || order.username}</td>
+                    <td className="px-4 py-3 border-b border-warm-beige text-espresso align-middle max-w-[250px] overflow-hidden text-ellipsis whitespace-nowrap text-mocha text-[13px] text-center">
                       {order.items.map(i => `${i.product_name} x${i.quantity}`).join(', ')}
                     </td>
-                    <td className="px-4 py-3 border-b border-border text-espresso align-middle font-semibold whitespace-nowrap text-center">฿{Number(order.total_amount).toFixed(2)}</td>
-                    <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">
+                    <td className="px-4 py-3 border-b border-warm-beige text-espresso align-middle font-semibold whitespace-nowrap text-center">฿{Number(order.total_amount).toFixed(2)}</td>
+                    <td className="px-4 py-3 border-b border-warm-beige text-espresso align-middle text-center">
                       <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap ${getStatusClass(order.status)}`}>
                         {getStatusLabel(order.status)}
                       </span>
                     </td>
-                    <td className="px-4 py-3 border-b border-border text-espresso align-middle whitespace-nowrap text-[13px] text-mocha text-center">{formatDateTime(order.created_at)}</td>
-                    <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">
+                    <td className="px-4 py-3 border-b border-warm-beige text-espresso align-middle whitespace-nowrap text-[13px] text-mocha text-center">{formatDateTime(order.created_at)}</td>
+                    <td className="px-4 py-3 border-b border-warm-beige text-espresso align-middle text-center">
                       <button
                         type="button"
-                        className="px-3 py-1.5 border-[1.5px] border-border rounded-md bg-transparent text-espresso text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all hover:border-caramel hover:text-caramel"
+                        className="px-3 py-1.5 border-[1.5px] border-warm-beige rounded-md bg-transparent text-espresso text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all hover:border-caramel hover:text-caramel"
                         onClick={() => setSelectedOrder(order)}
                         title="ดูรายละเอียด"
                       >
@@ -118,7 +118,7 @@ export default function Orders() {
       {selectedOrder && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/45 z-[100] p-6" onClick={() => setSelectedOrder(null)}>
           <div className="w-full max-w-[480px] max-h-[85vh] overflow-y-auto rounded-2xl bg-white shadow-[0_20px_40px_rgba(0,0,0,0.2)]" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between py-5 px-6 border-b border-border">
+            <div className="flex items-center justify-between py-5 px-6 border-b border-warm-beige">
               <h3 className="m-0 text-lg font-bold text-espresso">Order #{selectedOrder.order_id}</h3>
               <button
                 type="button"
@@ -149,10 +149,10 @@ export default function Orders() {
                 </span>
               </div>
 
-              <h4 className="m-0 text-[15px] font-semibold text-espresso border-t border-border pt-3">รายการสินค้า</h4>
+              <h4 className="m-0 text-[15px] font-semibold text-espresso border-t border-warm-beige pt-3">รายการสินค้า</h4>
               <div className="flex flex-col gap-2.5">
                 {selectedOrder.items.map(item => (
-                  <div key={item.order_item_id || item.product_id} className="flex items-center gap-3 py-2.5 px-3 border border-border rounded-lg">
+                  <div key={item.order_item_id || item.product_id} className="flex items-center gap-3 py-2.5 px-3 border border-warm-beige rounded-lg">
                     <span className="flex-1 font-semibold text-espresso">{item.product_name}</span>
                     <span className="text-[13px] text-mocha min-w-[30px] text-center">x{item.quantity}</span>
                     <span className="font-semibold text-caramel min-w-[70px] text-right">฿{Number(item.total).toFixed(2)}</span>
@@ -160,7 +160,7 @@ export default function Orders() {
                 ))}
               </div>
 
-              <div className="flex justify-between items-center pt-3 border-t border-border font-bold text-espresso">
+              <div className="flex justify-between items-center pt-3 border-t border-warm-beige font-bold text-espresso">
                 <span>ยอดรวม</span>
                 <span className="text-xl text-caramel">฿{Number(selectedOrder.total_amount).toFixed(2)}</span>
               </div>
