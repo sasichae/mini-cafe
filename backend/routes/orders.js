@@ -6,28 +6,56 @@ const { authorize } = require('../middleware/authorize')
 
 router.get('/', authenticate, authorize('admin'), async (req, res) => {
   try {
-    const [orders] = await pool.execute(
-      `SELECT o.order_id, o.user_id, o.total_amount, o.status, o.created_at,
-              u.username
-       FROM orders o
-       LEFT JOIN users u ON o.user_id = u.user_id
-       ORDER BY o.created_at DESC`
-    )
+    const { status } = req.query
+    const validStatuses = ['pending', 'preparing', 'completed', 'cancelled']
 
-    for (const order of orders) {
-      const [items] = await pool.execute(
-        `SELECT oi.*, p.name as product_name
-         FROM order_items oi
-         LEFT JOIN products p ON oi.product_id = p.product_id
-         WHERE oi.order_id = ?`,
-        [order.order_id]
-      )
-      order.items = items
+    let sql = `SELECT o.order_id, o.user_id, o.total_amount, o.status, o.created_at,
+                      u.username,
+                      oi.order_item_id, oi.product_id, oi.quantity, oi.unit_price, oi.total as item_total,
+                      p.name as product_name
+               FROM orders o
+               LEFT JOIN users u ON o.user_id = u.user_id
+               LEFT JOIN order_items oi ON o.order_id = oi.order_id
+               LEFT JOIN products p ON oi.product_id = p.product_id`
+    const params = []
+
+    if (status && validStatuses.includes(status)) {
+      sql += ' WHERE o.status = ?'
+      params.push(status)
+    }
+
+    sql += ' ORDER BY o.created_at DESC'
+
+    const [rows] = await pool.execute(sql, params)
+
+    const orderMap = new Map()
+    for (const row of rows) {
+      if (!orderMap.has(row.order_id)) {
+        orderMap.set(row.order_id, {
+          order_id: row.order_id,
+          user_id: row.user_id,
+          total_amount: row.total_amount,
+          status: row.status,
+          created_at: row.created_at,
+          username: row.username,
+          items: []
+        })
+      }
+      if (row.order_item_id) {
+        orderMap.get(row.order_id).items.push({
+          order_item_id: row.order_item_id,
+          product_id: row.product_id,
+          quantity: row.quantity,
+          unit_price: row.unit_price,
+          total: row.item_total,
+          product_name: row.product_name
+        })
+      }
     }
 
     res.json({
       success: true,
-      data: orders
+      data: Array.from(orderMap.values())
     })
   } catch (error) {
     console.error('Get orders error:', error)

@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { apiFetch } from '../../lib/api'
-import { getStatusClass, getStatusLabel, formatDateTime } from './adminUtils'
+import { getStatusClass, getStatusLabel, getStatusDotColor, formatDateTime } from './adminUtils'
 
 const STATUS_FILTERS = [
   { key: 'all', label: 'ทั้งหมด', dot: '#6b5240' },
@@ -16,22 +16,26 @@ export default function Orders() {
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [error, setError] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
-
-  const filteredOrders = useMemo(() => {
-    if (statusFilter === 'all') return orders
-    return orders.filter(o => o.status === statusFilter)
-  }, [orders, statusFilter])
+  const [totalCount, setTotalCount] = useState(0)
 
   function showError(msg) {
     setError(msg)
     setTimeout(() => setError(''), 2000)
   }
 
-  async function fetchOrders() {
+  async function fetchOrders(status) {
     try {
-      const res = await apiFetch('/api/orders')
+      const url = status && status !== 'all'
+        ? `/api/orders?status=${status}`
+        : '/api/orders'
+      const res = await apiFetch(url)
       const data = await res.json()
-      if (data.success) setOrders(data.data)
+      if (data.success) {
+        setOrders(data.data)
+        if (status === 'all' || !status) {
+          setTotalCount(data.data.length)
+        }
+      }
     } catch {
       showError('ไม่สามารถโหลดรายการ Order ได้')
     } finally {
@@ -40,8 +44,8 @@ export default function Orders() {
   }
 
   useEffect(() => {
-    fetchOrders()
-  }, [])
+    fetchOrders(statusFilter)
+  }, [statusFilter])
 
   async function updateOrderStatus(orderId, newStatus) {
     try {
@@ -74,7 +78,7 @@ export default function Orders() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="m-0 font-display text-[24px] font-semibold text-espresso leading-tight">รายการ Order ล่าสุด</h2>
-            <p className="m-0 mt-1 text-[13px] text-mocha">ทั้งหมด {orders.length} ออเดอร์ · แสดง {filteredOrders.length} รายการ</p>
+            <p className="m-0 mt-1 text-[13px] text-mocha">ทั้งหมด {totalCount} ออเดอร์ · แสดง {orders.length} รายการ</p>
           </div>
         </div>
 
@@ -114,18 +118,18 @@ export default function Orders() {
                 </tr>
               </thead>
               <tbody>
-                {filteredOrders.length === 0 ? (
+                {orders.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-6 py-14 text-center text-[13.5px]" style={{ color: '#9C8874' }}>
                       ไม่พบออเดอร์ที่ตรงกับการกรอง
                     </td>
                   </tr>
                 ) : (
-                  filteredOrders.map((order, idx) => (
+                  orders.map((order, idx) => (
                     <tr
                       key={order.order_id}
                       className="cursor-pointer transition-colors duration-150"
-                      style={{ borderBottom: idx === filteredOrders.length - 1 ? 'none' : '1px solid #EEE5D3' }}
+                      style={{ borderBottom: idx === orders.length - 1 ? 'none' : '1px solid #EEE5D3' }}
                       onMouseEnter={e => e.currentTarget.style.background = '#F3ECDD'}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     >
@@ -137,15 +141,9 @@ export default function Orders() {
                       <td className="px-6 py-4 text-center text-[13.5px] font-semibold" style={{ color: '#2A211B' }}>฿{Number(order.total_amount).toFixed(2)}</td>
                       <td className="px-6 py-4 text-center">
                         <span
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium whitespace-nowrap"
-                          style={{
-                            background: order.status === 'pending' ? '#FBF1DF' : order.status === 'preparing' ? '#EEF2F6' : order.status === 'completed' ? '#ECF3EA' : '#F7E9E9',
-                            color: order.status === 'pending' ? '#8C6A1E' : order.status === 'preparing' ? '#4E6483' : order.status === 'completed' ? '#4B7346' : '#8F4141',
-                          }}
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium whitespace-nowrap ${getStatusClass(order.status)}`}
                         >
-                          <span className="w-1.5 h-1.5 rounded-full" style={{
-                            background: order.status === 'pending' ? '#C9962B' : order.status === 'preparing' ? '#7B93B0' : order.status === 'completed' ? '#6F9A6A' : '#B85C5C',
-                          }} />
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ background: getStatusDotColor(order.status) }} />
                           {getStatusLabel(order.status)}
                         </span>
                       </td>

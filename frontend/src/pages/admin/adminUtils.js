@@ -18,6 +18,16 @@ export function getStatusClass(status) {
   return classes[status] || ''
 }
 
+export function getStatusDotColor(status) {
+  const colors = {
+    pending: '#E67E22',
+    preparing: '#3498DB',
+    completed: '#2ECC71',
+    cancelled: '#E74C3C'
+  }
+  return colors[status] || '#6b5240'
+}
+
 export function formatDateTime(dateStr) {
   const d = new Date(dateStr)
   return d.toLocaleDateString('th-TH', {

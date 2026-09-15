@@ -17,7 +17,7 @@ router.post('/register', async (req, res) => {
     })
   }
 
-  if (password.length < 6) {
+  if (password.trim().length < 6) {
     return res.status(400).json({
       success: false,
       message: 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'
@@ -90,10 +90,6 @@ router.post('/login', async (req, res) => {
       })
     }
 
-    const redirectUrl = user.role === 'admin'
-      ? '/admin/dashboard'
-      : '/staff/order'
-
     const token = jwt.sign(
       { id: user.user_id, username: user.username, role: user.role },
       JWT_SECRET,
@@ -108,8 +104,7 @@ router.post('/login', async (req, res) => {
         id: user.user_id,
         username: user.username,
         role: user.role
-      },
-      redirectUrl
+      }
     })
   } catch (error) {
     console.error('Login error:', error)
