@@ -386,7 +386,7 @@ export default function Products() {
       {showProductForm && (
         <div className="fixed inset-0 bg-black/45 z-[100] flex items-center justify-center" onClick={closeProductForm}>
           <div className="w-full max-w-[520px] bg-white rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.2)] flex flex-col" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between py-5 px-6 border border-border border-b rounded-t-2xl">
+            <div className="flex items-center justify-between py-5 px-6 border-b border-border rounded-t-2xl">
               <h3 className="m-0 text-lg font-bold text-espresso">
                 {editingProduct ? 'แก้ไขสินค้า' : 'เพิ่มสินค้าใหม่'}
               </h3>
@@ -403,7 +403,7 @@ export default function Products() {
               </button>
             </div>
 
-            <div className="flex flex-col gap-4 py-5 px-6 border border-border border-t-0 rounded-b-2xl">
+            <div className="flex flex-col gap-4 py-5 px-6 border-x border-b border-border rounded-b-2xl">
               {formError && (
                 <p className="m-0 mb-3 px-3 py-2.5 rounded-lg bg-error-bg text-error text-[13px] font-semibold text-center" role="alert">{formError}</p>
               )}
@@ -508,7 +508,7 @@ export default function Products() {
                   title="ยืนยัน"
                 >
                   {formLoading ? (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="spin">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="animate-spin">
                       <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                     </svg>
                   ) : (

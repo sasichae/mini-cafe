@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { apiFetch } from '../lib/api'
 import '../styles/Login.css'
 
 export default function Login({ onLogin }) {
@@ -21,7 +22,7 @@ export default function Login({ onLogin }) {
     setError('')
 
     try {
-      const res = await fetch('http://localhost:3001/api/auth/login', {
+      const res = await apiFetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: username.trim(), password })

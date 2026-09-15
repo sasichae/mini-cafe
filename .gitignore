@@ -1,6 +1,14 @@
 .playwright-mcp/
 .omo
 token.txt
+
+# Dependencies & build artifacts (root-level)
+node_modules/
+package.json
+package-lock.json
+screenshots/
+
+# Legacy screenshot files
 admin-dashboard-tabs.png
 admin-dashboard-test.png
 products-tab.png
