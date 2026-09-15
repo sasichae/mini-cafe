@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiFetch } from './api'
 
@@ -23,6 +23,9 @@ export default function AdminDashboard({ user, onLogout }) {
   const [productsLoading, setProductsLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false)
+  const categoryDropdownRef = useRef(null)
+  const [productSearch, setProductSearch] = useState('')
   const navigate = useNavigate()
 
   function showError(msg) {
@@ -41,6 +44,18 @@ export default function AdminDashboard({ user, onLogout }) {
     fetchProducts()
     fetchCategories()
   }, [])
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(e.target)) {
+        setCategoryDropdownOpen(false)
+      }
+    }
+    if (categoryDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [categoryDropdownOpen])
 
   async function fetchStats() {
     try {
@@ -447,23 +462,49 @@ export default function AdminDashboard({ user, onLogout }) {
             <section className="flex flex-col gap-4">
               <div className="flex items-center justify-between gap-4">
                 <h2 className="m-0 text-lg font-semibold text-espresso">รายการสินค้า</h2>
-                <button
-                  type="button"
-                  className="mt-3 py-2.5 px-0 border-none rounded-lg bg-espresso text-cream text-sm font-semibold cursor-pointer hover:bg-[#3a2819] transition-colors"
-                  onClick={openAddProductForm}
-                  title="เพิ่มสินค้า"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                </button>
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="ค้นหาสินค้า..."
+                      value={productSearch}
+                      onChange={e => setProductSearch(e.target.value)}
+                      className="py-2.5 pl-9 pr-3 border-[1.5px] border-border rounded-lg bg-white text-espresso text-sm transition-colors focus:outline-none focus:border-caramel w-[200px]"
+                    />
+                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mocha/50 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="m21 21-4.3-4.3" />
+                    </svg>
+                  </div>
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 py-2.5 px-4 border-none rounded-lg bg-espresso text-cream text-sm font-semibold cursor-pointer hover:bg-[#3a2819] transition-colors"
+                    onClick={openAddProductForm}
+                    title="เพิ่มสินค้า"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    เพิ่ม
+                  </button>
+                </div>
               </div>
 
               {productsLoading ? (
                 <p className="col-span-full text-center py-10 text-mocha">Loading...</p>
               ) : products.length === 0 ? (
                 <p className="col-span-full text-center py-10 text-mocha">ยังไม่มีสินค้า</p>
+              ) : products.filter(product => {
+                  if (!productSearch.trim()) return true
+                  const query = productSearch.toLowerCase()
+                  const category = categories.find(c => c.category_id === product.category_id)
+                  return (
+                    product.name.toLowerCase().includes(query) ||
+                    (category && category.name.toLowerCase().includes(query))
+                  )
+                }).length === 0 ? (
+                <p className="col-span-full text-center py-10 text-mocha">ไม่พบสินค้าที่ค้นหา</p>
               ) : (
                 <div className="overflow-x-auto border border-border rounded-xl bg-white">
                   <table className="w-full border-collapse text-sm">
@@ -478,7 +519,15 @@ export default function AdminDashboard({ user, onLogout }) {
                       </tr>
                     </thead>
                     <tbody>
-                      {products.map(product => {
+                      {products.filter(product => {
+                        if (!productSearch.trim()) return true
+                        const query = productSearch.toLowerCase()
+                        const category = categories.find(c => c.category_id === product.category_id)
+                        return (
+                          product.name.toLowerCase().includes(query) ||
+                          (category && category.name.toLowerCase().includes(query))
+                        )
+                      }).map(product => {
                         const category = categories.find(c => c.category_id === product.category_id)
                         return (
                           <tr key={product.product_id} className="hover:bg-cream">
@@ -676,7 +725,7 @@ export default function AdminDashboard({ user, onLogout }) {
                   )}
 
                   <div className="flex flex-col gap-1.5">
-                    <label htmlFor="form-name" className="text-[13px] font-semibold text-mocha">ชื่อสินค้า *</label>
+                    <label htmlFor="form-name" className="text-[13px] font-semibold text-mocha">ชื่อสินค้า</label>
                     <input
                       id="form-name"
                       type="text"
@@ -688,7 +737,7 @@ export default function AdminDashboard({ user, onLogout }) {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label htmlFor="form-price" className="text-[13px] font-semibold text-mocha">ราคา (฿) *</label>
+                    <label htmlFor="form-price" className="text-[13px] font-semibold text-mocha">ราคา (฿)</label>
                     <input
                       id="form-price"
                       type="number"
@@ -702,31 +751,56 @@ export default function AdminDashboard({ user, onLogout }) {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label htmlFor="form-category" className="text-[13px] font-semibold text-mocha">หมวดหมู่ *</label>
-                    <select
-                      id="form-category"
-                      value={formCategoryId}
-                      onChange={e => setFormCategoryId(e.target.value)}
-                      className="py-2.5 px-3 border-[1.5px] border-border rounded-lg bg-white text-espresso text-sm transition-colors focus:outline-none focus:border-caramel"
-                    >
-                      <option value="">เลือกหมวดหมู่</option>
-                      {categories.map(cat => (
-                        <option key={cat.category_id} value={cat.category_id}>
-                          {cat.name}
-                        </option>
-                      ))}
-                    </select>
+                    <label className="text-[13px] font-semibold text-mocha">หมวดหมู่</label>
+                    <div className="relative" ref={categoryDropdownRef}>
+                      <button
+                        type="button"
+                        onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
+                        className={`w-full py-2.5 px-3 pr-10 border-[1.5px] rounded-lg bg-white text-sm text-left cursor-pointer transition-colors focus:outline-none ${categoryDropdownOpen ? 'border-caramel' : 'border-border'} ${formCategoryId ? 'text-espresso' : 'text-mocha/60'}`}
+                      >
+                        {formCategoryId
+                          ? categories.find(c => String(c.category_id) === formCategoryId)?.name || 'เลือกหมวดหมู่'
+                          : 'เลือกหมวดหมู่'}
+                      </button>
+                      <svg className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mocha pointer-events-none transition-transform ${categoryDropdownOpen ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="m6 9 6 6 6-6" />
+                      </svg>
+
+                      {categoryDropdownOpen && (
+                        <div className="absolute z-50 w-full mt-1 bg-white border border-border rounded-lg shadow-[0_8px_24px_rgba(42,28,19,0.12)] overflow-hidden">
+                          {categories.map(cat => (
+                            <button
+                              key={cat.category_id}
+                              type="button"
+                              onClick={() => { setFormCategoryId(String(cat.category_id)); setCategoryDropdownOpen(false) }}
+                              className={`w-full py-2.5 px-3 text-left text-sm border-none cursor-pointer transition-colors ${String(cat.category_id) === formCategoryId ? 'bg-cream text-espresso font-medium' : 'bg-transparent text-mocha hover:bg-cream/60'}`}
+                            >
+                              {cat.name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="flex flex-col gap-1.5">
                     <label htmlFor="form-description" className="text-[13px] font-semibold text-mocha">รายละเอียด</label>
-                    <textarea
-                      id="form-description"
-                      placeholder="กรอกรายละเอียดสินค้า"
-                      value={formDescription}
-                      onChange={e => setFormDescription(e.target.value)}
-                      className="py-2.5 px-3 border-[1.5px] border-border rounded-lg bg-white text-espresso text-sm transition-colors focus:outline-none focus:border-caramel min-h-[80px] resize-y"
-                    />
+                    <div className="relative">
+                      <textarea
+                        id="form-description"
+                        placeholder="กรอกรายละเอียดสินค้า"
+                        value={formDescription}
+                        onChange={e => setFormDescription(e.target.value)}
+                        className="w-full py-2.5 pl-10 pr-3 border-[1.5px] border-border rounded-lg bg-white text-espresso text-sm transition-colors focus:outline-none focus:border-caramel min-h-[80px] resize-y"
+                      />
+                      <svg className="absolute left-3 top-3 w-4 h-4 text-mocha/50 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <line x1="10" y1="9" x2="8" y2="9" />
+                      </svg>
+                    </div>
                   </div>
 
                   <div className="flex flex-col gap-1.5">
