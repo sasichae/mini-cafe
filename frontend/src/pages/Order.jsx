@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { apiFetch } from './api'
+import { apiFetch } from '../lib/api'
 
 export default function Order({ user, onLogout }) {
   const [categories, setCategories] = useState([])

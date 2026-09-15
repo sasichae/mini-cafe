@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
-import Login from './Login'
-import Register from './Register'
-import Order from './Order'
-import AdminDashboard from './AdminDashboard'
-import { SESSION_KEY, UNAUTHORIZED_EVENT } from './api'
-import './App.css'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import Order from './pages/Order'
+import AdminLayout from './pages/admin/AdminLayout'
+import Dashboard from './pages/admin/Dashboard'
+import AdminOrders from './pages/admin/Orders'
+import AdminProducts from './pages/admin/Products'
+import { SESSION_KEY, UNAUTHORIZED_EVENT } from './lib/api'
+import './styles/App.css'
 
 function loadSession() {
   try {
@@ -90,10 +93,14 @@ export default function App() {
         path="/admin"
         element={
           <ProtectedRoute user={user} allowedRoles={['admin']}>
-            <AdminDashboard user={user} onLogout={handleLogout} />
+            <AdminLayout user={user} onLogout={handleLogout} />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<Dashboard />} />
+        <Route path="orders" element={<AdminOrders />} />
+        <Route path="products" element={<AdminProducts />} />
+      </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

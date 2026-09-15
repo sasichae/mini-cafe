@@ -1,27 +1,36 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './Login.css'
+import '../styles/Login.css'
 
-export default function Login({ onLogin }) {
+export default function Register() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
   const navigate = useNavigate()
 
   async function handleSubmit(event) {
     event.preventDefault()
+    setError('')
 
-    if (!username.trim() || !password) {
-      setError('กรุณากรอกชื่อผู้ใช้และรหัสผ่านให้ครบ')
+    if (!username.trim() || !password || !confirmPassword) {
+      setError('กรุณากรอกข้อมูลให้ครบทุกช่อง')
       return
     }
 
-    setLoading(true)
-    setError('')
+    if (password !== confirmPassword) {
+      setError('รหัสผ่านไม่ตรงกัน')
+      return
+    }
+
+    if (password.length < 6) {
+      setError('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร')
+      return
+    }
 
     try {
-      const res = await fetch('http://localhost:3001/api/auth/login', {
+      const res = await fetch('http://localhost:3001/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: username.trim(), password })
@@ -31,17 +40,33 @@ export default function Login({ onLogin }) {
 
       if (!data.success) {
         setError(data.message)
-        setLoading(false)
         return
       }
 
-      localStorage.setItem('mini-cafe-token', data.token)
-      onLogin(data.user)
-      navigate(data.user.role === 'admin' ? '/admin' : '/')
+      setSuccess(true)
     } catch {
       setError('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้')
-      setLoading(false)
     }
+  }
+
+  if (success) {
+    return (
+      <div className="login-page">
+        <section className="login-panel">
+          <div className="login-form">
+            <h2 className="login-title">สมัครสมาชิกสำเร็จ</h2>
+            <p className="login-subtitle">You can now sign in</p>
+            <button
+              type="button"
+              className="login-button"
+              onClick={() => navigate('/login')}
+            >
+              กลับไปเข้าสู่ระบบ
+            </button>
+          </div>
+        </section>
+      </div>
+    )
   }
 
   return (
@@ -67,13 +92,13 @@ export default function Login({ onLogin }) {
 
       <section className="login-panel">
         <form className="login-form" onSubmit={handleSubmit} noValidate>
-          <h2 className="login-title">เข้าสู่ระบบ</h2>
-          <p className="login-subtitle">Sign in to continue</p>
+          <h2 className="login-title">สมัครสมาชิก</h2>
+          <p className="login-subtitle">Create an account</p>
 
           <div className="field">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="reg-username">Username</label>
             <input
-              id="username"
+              id="reg-username"
               name="username"
               type="text"
               autoComplete="username"
@@ -87,16 +112,32 @@ export default function Login({ onLogin }) {
           </div>
 
           <div className="field">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="reg-password">Password</label>
             <input
-              id="password"
+              id="reg-password"
               name="password"
               type="password"
-              autoComplete="current-password"
-              placeholder="กรอกรหัสผ่าน"
+              autoComplete="new-password"
+              placeholder="กรอกรหัสผ่าน (อย่างน้อย 6 ตัวอักษร)"
               value={password}
               onChange={(event) => {
                 setPassword(event.target.value)
+                setError('')
+              }}
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="reg-confirm">Confirm Password</label>
+            <input
+              id="reg-confirm"
+              name="confirmPassword"
+              type="password"
+              autoComplete="new-password"
+              placeholder="กรอกรหัสผ่านอีกครั้ง"
+              value={confirmPassword}
+              onChange={(event) => {
+                setConfirmPassword(event.target.value)
                 setError('')
               }}
             />
@@ -112,22 +153,18 @@ export default function Login({ onLogin }) {
           )}
 
           <button type="submit" className="login-button">
-            Login
+            Register
           </button>
         </form>
 
         <p className="login-hint">
-          ทดลองใช้:{' '}
-          <code>staff / staff123</code> หรือ <code>admin / admin123</code>
-        </p>
-        <p className="login-hint">
-          ยังไม่มีบัญชี?{' '}
+          มีบัญชีอยู่แล้ว?{' '}
           <button
             type="button"
             className="link-button"
-            onClick={() => navigate('/register')}
+            onClick={() => navigate('/login')}
           >
-            สมัครสมาชิก
+            เข้าสู่ระบบ
           </button>
         </p>
       </section>
