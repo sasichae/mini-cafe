@@ -131,6 +131,7 @@ export default function Order({ user, onLogout }) {
         quantity: item.quantity
       }))
 
+      const savedItems = [...cart]
       const res = await apiFetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -145,6 +146,7 @@ export default function Order({ user, onLogout }) {
         return
       }
 
+      setLastOrderItems(savedItems)
       setOrderSuccess(data.data)
       setCart([])
     } catch {
@@ -153,41 +155,126 @@ export default function Order({ user, onLogout }) {
     }
   }
 
+  const [lastOrderItems, setLastOrderItems] = useState([])
+
   function newOrder() {
     setOrderSuccess(null)
+    setLastOrderItems([])
     setOrderError('')
   }
 
   const totalItemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
+  const [drawn, setDrawn] = useState(false)
+
+  useEffect(() => {
+    if (orderSuccess) {
+      setDrawn(false)
+      const t = setTimeout(() => setDrawn(true), 120)
+      return () => clearTimeout(t)
+    }
+  }, [orderSuccess])
+
+  const formatTime = (dateStr) => {
+    if (!dateStr) return ''
+    const d = new Date(dateStr)
+    const day = d.getDate()
+    const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.']
+    const month = months[d.getMonth()]
+    const year = d.getFullYear() + 543
+    const time = d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
+    return `${day} ${month} ${year} · ${time}`
+  }
 
   if (orderSuccess) {
     return (
-      <div className="min-h-full bg-cream text-ink">
-        <header className="border-b border-border px-10 pb-4 pt-6">
-          <p className="text-[11px] font-bold tracking-[0.12em] text-rust">MINI CAFE</p>
-          <h1 className="font-display text-[34px] font-semibold leading-tight text-ink">สั่งออเดอร์</h1>
-        </header>
+      <div className="flex min-h-screen items-center justify-center bg-cream p-10 text-ink">
+        <style>{`
+          .check-circle { stroke-dasharray: 132; stroke-dashoffset: 132; transition: stroke-dashoffset 0.6s ease; }
+          .check-tick { stroke-dasharray: 36; stroke-dashoffset: 36; transition: stroke-dashoffset 0.4s ease 0.5s; }
+          .drawn .check-circle { stroke-dashoffset: 0; }
+          .drawn .check-tick { stroke-dashoffset: 0; }
+        `}</style>
 
-        <main className="flex min-h-[calc(100vh-100px)] items-center justify-center px-10 py-16">
-          <div className="text-center">
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#2d9d4e]">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
+        <div className={`w-full max-w-[380px] overflow-hidden rounded-[14px] border border-border bg-white shadow-[0_18px_40px_rgba(36,26,18,0.10)] ${drawn ? 'drawn' : ''}`}>
+          {/* Confirmation */}
+          <div className="px-8 pt-9 pb-6 text-center">
+            <svg width="64" height="64" viewBox="0 0 64 64" className="mx-auto mb-[18px]">
+              <circle className="check-circle" cx="32" cy="32" r="21" fill="none" stroke="#3F8E5C" strokeWidth="4" strokeLinecap="round" />
+              <path className="check-tick" d="M22 33l7 7 13-15" fill="none" stroke="#3F8E5C" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <h1 className="font-display mb-1.5 text-[26px] font-semibold text-ink">สั่งซื้อสำเร็จ!</h1>
+            <p className="m-0 text-[13px] text-ink-muted">ออเดอร์ของคุณถูกส่งเข้าครัวแล้ว</p>
+          </div>
+
+          {/* Perforated divider */}
+          <div className="relative mx-6 h-1 bg-border">
+            <div
+              className="absolute inset-x-0 h-[7px] -top-[3px]"
+              style={{
+                backgroundImage: 'radial-gradient(circle, #FAF3E8 3px, transparent 3.5px)',
+                backgroundSize: '14px 1px',
+                backgroundPosition: 'center',
+              }}
+            />
+          </div>
+
+          {/* Receipt body */}
+          <div className="px-8 pt-[22px] pb-5">
+            <div className="mb-1 flex justify-between">
+              <span className="font-mono text-[13px] text-ink-muted">Order</span>
+              <span className="font-mono text-[13px] font-medium">#{orderSuccess.order_id}</span>
             </div>
-            <h2 className="font-display mb-2 text-[28px] font-semibold text-ink">สั่งซื้อสำเร็จ!</h2>
-            <p className="mb-1 text-base font-semibold text-rust">Order #{orderSuccess.order_id}</p>
-            <p className="mb-1 text-[22px] font-bold text-ink">฿{Number(orderSuccess.total_amount).toFixed(2)}</p>
-            <p className="mb-8 text-sm text-ink-muted">สถานะ: pending</p>
+            <div className="mb-[18px] flex justify-between">
+              <span className="font-mono text-[13px] text-ink-muted">เวลา</span>
+              <span className="font-mono text-[13px]">{formatTime(orderSuccess.created_at)}</span>
+            </div>
+
+            <div className="mb-4 flex flex-col gap-2">
+              {lastOrderItems.map(item => (
+                <div key={item.product_id} className="flex justify-between font-mono text-[13.5px]">
+                  <span>{item.quantity}× {item.name}</span>
+                  <span>฿{(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-baseline justify-between border-t border-dashed border-border pt-3.5">
+              <span className="font-display text-[15px] font-semibold">รวมทั้งหมด</span>
+              <span className="font-display text-[24px] font-bold">฿{Number(orderSuccess.total_amount).toFixed(2)}</span>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-col gap-2.5 px-8 pb-8 pt-2">
             <button
               type="button"
-              className="rounded-lg bg-rust px-8 py-3 text-base font-semibold text-white transition-colors hover:bg-rust-dark"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-rust py-3 text-sm font-semibold text-white transition-colors hover:bg-rust-dark"
               onClick={newOrder}
             >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 2v6h-6" />
+                <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+                <path d="M3 22v-6h6" />
+                <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+              </svg>
               สั่งซื้อใหม่
             </button>
+            <button
+              type="button"
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-transparent py-3 text-sm font-medium text-ink transition-colors hover:bg-border"
+              onClick={() => navigate('/staff/orders')}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
+              </svg>
+              ดูสถานะออเดอร์
+            </button>
           </div>
-        </main>
+        </div>
       </div>
     )
   }
@@ -213,7 +300,8 @@ export default function Order({ user, onLogout }) {
         <div className="flex gap-6 overflow-x-auto scrollbar-thin">
           <button
             type="button"
-            className={`shrink-0 whitespace-nowrap border-b-2 bg-transparent px-0.5 pb-3 text-[15px] transition-colors ${selectedCategory === null ? 'border-rust font-semibold text-ink' : 'border-transparent font-medium text-ink-muted'}`}
+            style={selectedCategory === null ? { background: '#2a1c13', color: '#fff' } : undefined}
+            className={`shrink-0 whitespace-nowrap rounded-full bg-transparent px-4 py-1.5 text-[15px] transition-colors ${selectedCategory === null ? 'font-bold' : 'font-semibold text-espresso hover:bg-cream-deep'}`}
             onClick={() => setSelectedCategory(null)}
           >
             ทั้งหมด
@@ -222,7 +310,8 @@ export default function Order({ user, onLogout }) {
             <button
               key={cat.category_id}
               type="button"
-              className={`shrink-0 whitespace-nowrap border-b-2 bg-transparent px-0.5 pb-3 text-[15px] transition-colors ${selectedCategory === cat.category_id ? 'border-rust font-semibold text-ink' : 'border-transparent font-medium text-ink-muted'}`}
+              style={selectedCategory === cat.category_id ? { background: '#2a1c13', color: '#fff' } : undefined}
+              className={`shrink-0 whitespace-nowrap rounded-full bg-transparent px-4 py-1.5 text-[15px] transition-colors ${selectedCategory === cat.category_id ? 'font-bold' : 'font-semibold text-espresso hover:bg-cream-deep'}`}
               onClick={() => setSelectedCategory(cat.category_id)}
             >
               {cat.name}
@@ -232,7 +321,7 @@ export default function Order({ user, onLogout }) {
       </header>
 
       {/* Main Content */}
-      <div className="flex flex-wrap items-start gap-8 px-10 pb-7">
+      <div className="flex flex-wrap items-start gap-8 px-10 pt-8 pb-7">
         {/* Product Grid */}
         <div className="min-w-0 flex-1 basis-[600px]">
           {loading ? (
@@ -240,7 +329,7 @@ export default function Order({ user, onLogout }) {
           ) : products.length === 0 ? (
             <div className="py-16 text-center text-ink-muted">ไม่มีสินค้า</div>
           ) : (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-5">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-6">
               {products.map(product => {
                 const gradient = CATEGORY_GRADIENTS[product.category_id] || CATEGORY_GRADIENTS[1]
                 const qty = getCartQuantity(product.product_id)
