@@ -1,12 +1,26 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { apiFetch } from '../../lib/api'
 import { getStatusClass, getStatusLabel, formatDateTime } from './adminUtils'
+
+const STATUS_FILTERS = [
+  { key: 'all', label: 'ทั้งหมด', dot: '#6b5240' },
+  { key: 'pending', label: 'รอดำเนินการ', dot: '#E67E22' },
+  { key: 'preparing', label: 'กำลังเตรียม', dot: '#3498DB' },
+  { key: 'completed', label: 'เสร็จสิ้น', dot: '#2ECC71' },
+  { key: 'cancelled', label: 'ยกเลิก', dot: '#E74C3C' },
+]
 
 export default function Orders() {
   const [orders, setOrders] = useState([])
   const [ordersLoading, setOrdersLoading] = useState(true)
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [error, setError] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+
+  const filteredOrders = useMemo(() => {
+    if (statusFilter === 'all') return orders
+    return orders.filter(o => o.status === statusFilter)
+  }, [orders, statusFilter])
 
   function showError(msg) {
     setError(msg)
@@ -58,7 +72,29 @@ export default function Orders() {
 
       <section className="flex flex-col gap-4">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="m-0 text-lg font-semibold text-espresso">รายการ Order ล่าสุด</h2>
+          <div>
+            <h2 className="m-0 font-display text-[24px] font-semibold text-espresso leading-tight">รายการ Order ล่าสุด</h2>
+            <p className="m-0 mt-1 text-[13px] text-mocha">ทั้งหมด {orders.length} ออเดอร์ · แสดง {filteredOrders.length} รายการ</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap">
+          {STATUS_FILTERS.map(f => (
+            <button
+              key={f.key}
+              type="button"
+              onClick={() => setStatusFilter(f.key)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12.5px] font-medium cursor-pointer transition-colors duration-150"
+              style={{
+                background: statusFilter === f.key ? '#2a1c13' : '#fffdf9',
+                color: statusFilter === f.key ? '#f3e7d3' : '#5b4e41',
+                border: statusFilter === f.key ? '1px solid #2a1c13' : '1px solid #E4D9C4',
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: f.dot }} />
+              {f.label}
+            </button>
+          ))}
         </div>
 
         {ordersLoading ? (
@@ -66,49 +102,71 @@ export default function Orders() {
         ) : orders.length === 0 ? (
           <p className="col-span-full text-center py-10 text-mocha">ยังไม่มี Order</p>
         ) : (
-          <div className="overflow-x-auto border border-warm-beige rounded-xl bg-white">
-            <table className="w-full border-collapse text-sm">
+          <div className="rounded-xl overflow-hidden" style={{ background: '#FBF7EF', border: '1px solid #E4D9C4' }}>
+            <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-warm-beige whitespace-nowrap">Order</th>
-                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-warm-beige whitespace-nowrap">ลูกค้า</th>
-                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-warm-beige whitespace-nowrap">รายการ</th>
-                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-warm-beige whitespace-nowrap">ยอดรวม</th>
-                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-warm-beige whitespace-nowrap">สถานะ</th>
-                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-warm-beige whitespace-nowrap">เวลา</th>
-                  <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-warm-beige whitespace-nowrap"></th>
+                  {['Order', 'ลูกค้า', 'รายการ', 'ยอดรวม', 'สถานะ', 'เวลา', ''].map((h, i) => (
+                    <th key={i} className="px-6 py-3.5 text-center text-[12.5px] font-medium" style={{ color: '#9C8874', borderBottom: '1px solid #E4D9C4' }}>
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {orders.map(order => (
-                  <tr key={order.order_id} className="hover:bg-cream">
-                    <td className="px-4 py-3 border-b border-warm-beige text-espresso align-middle font-bold text-caramel whitespace-nowrap text-center">#{order.order_id}</td>
-                    <td className="px-4 py-3 border-b border-warm-beige text-espresso align-middle text-center">{order.user_name || order.username}</td>
-                    <td className="px-4 py-3 border-b border-warm-beige text-espresso align-middle max-w-[250px] overflow-hidden text-ellipsis whitespace-nowrap text-mocha text-[13px] text-center">
-                      {order.items.map(i => `${i.product_name} x${i.quantity}`).join(', ')}
-                    </td>
-                    <td className="px-4 py-3 border-b border-warm-beige text-espresso align-middle font-semibold whitespace-nowrap text-center">฿{Number(order.total_amount).toFixed(2)}</td>
-                    <td className="px-4 py-3 border-b border-warm-beige text-espresso align-middle text-center">
-                      <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap ${getStatusClass(order.status)}`}>
-                        {getStatusLabel(order.status)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 border-b border-warm-beige text-espresso align-middle whitespace-nowrap text-[13px] text-mocha text-center">{formatDateTime(order.created_at)}</td>
-                    <td className="px-4 py-3 border-b border-warm-beige text-espresso align-middle text-center">
-                      <button
-                        type="button"
-                        className="px-3 py-1.5 border-[1.5px] border-warm-beige rounded-md bg-transparent text-espresso text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all hover:border-caramel hover:text-caramel"
-                        onClick={() => setSelectedOrder(order)}
-                        title="ดูรายละเอียด"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                          <circle cx="12" cy="12" r="3" />
-                        </svg>
-                      </button>
+                {filteredOrders.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-14 text-center text-[13.5px]" style={{ color: '#9C8874' }}>
+                      ไม่พบออเดอร์ที่ตรงกับการกรอง
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filteredOrders.map((order, idx) => (
+                    <tr
+                      key={order.order_id}
+                      className="cursor-pointer transition-colors duration-150"
+                      style={{ borderBottom: idx === filteredOrders.length - 1 ? 'none' : '1px solid #EEE5D3' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#F3ECDD'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <td className="px-6 py-4 text-center text-[14px] font-semibold" style={{ color: '#2A211B' }}>#{order.order_id}</td>
+                      <td className="px-6 py-4 text-center text-[13.5px]" style={{ color: '#5B4E41' }}>{order.user_name || order.username}</td>
+                      <td className="px-6 py-4 text-center text-[13.5px] max-w-[250px] overflow-hidden text-ellipsis whitespace-nowrap" style={{ color: '#5B4E41' }}>
+                        {order.items.map(i => `${i.product_name} x${i.quantity}`).join(', ')}
+                      </td>
+                      <td className="px-6 py-4 text-center text-[13.5px] font-semibold" style={{ color: '#2A211B' }}>฿{Number(order.total_amount).toFixed(2)}</td>
+                      <td className="px-6 py-4 text-center">
+                        <span
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium whitespace-nowrap"
+                          style={{
+                            background: order.status === 'pending' ? '#FBF1DF' : order.status === 'preparing' ? '#EEF2F6' : order.status === 'completed' ? '#ECF3EA' : '#F7E9E9',
+                            color: order.status === 'pending' ? '#8C6A1E' : order.status === 'preparing' ? '#4E6483' : order.status === 'completed' ? '#4B7346' : '#8F4141',
+                          }}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full" style={{
+                            background: order.status === 'pending' ? '#C9962B' : order.status === 'preparing' ? '#7B93B0' : order.status === 'completed' ? '#6F9A6A' : '#B85C5C',
+                          }} />
+                          {getStatusLabel(order.status)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-center text-[13px]" style={{ color: '#8C7C6B' }}>{formatDateTime(order.created_at)}</td>
+                      <td className="px-6 py-4 text-center">
+                        <button
+                          type="button"
+                          className="w-8 h-8 rounded-lg flex items-center justify-center mx-auto transition-colors"
+                          style={{ border: '1px solid #E4D9C4', color: '#5B4E41' }}
+                          onClick={() => setSelectedOrder(order)}
+                          title="ดูรายละเอียด"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                            <circle cx="12" cy="12" r="3" />
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -174,14 +232,17 @@ export default function Orders() {
                       onClick={() => updateOrderStatus(selectedOrder.order_id, 'preparing')}
                       title="เริ่มเตรียม"
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M12 2v4" />
-                        <path d="m4.93 4.93 2.83 2.83" />
-                        <path d="M2 12h4" />
-                        <path d="m19.07 4.93-2.83 2.83" />
-                        <path d="M22 12h-4" />
-                        <circle cx="12" cy="12" r="4" />
-                      </svg>
+                      <span className="flex items-center justify-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M12 2v4" />
+                          <path d="m4.93 4.93 2.83 2.83" />
+                          <path d="M2 12h4" />
+                          <path d="m19.07 4.93-2.83 2.83" />
+                          <path d="M22 12h-4" />
+                          <circle cx="12" cy="12" r="4" />
+                        </svg>
+                        เริ่มเตรียม
+                      </span>
                     </button>
                     <button
                       type="button"
@@ -189,11 +250,14 @@ export default function Orders() {
                       onClick={() => updateOrderStatus(selectedOrder.order_id, 'cancelled')}
                       title="ยกเลิก"
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="15" y1="9" x2="9" y2="15" />
-                        <line x1="9" y1="9" x2="15" y2="15" />
-                      </svg>
+                      <span className="flex items-center justify-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="15" y1="9" x2="9" y2="15" />
+                          <line x1="9" y1="9" x2="15" y2="15" />
+                        </svg>
+                        ยกเลิก
+                      </span>
                     </button>
                   </>
                 )}
@@ -202,12 +266,15 @@ export default function Orders() {
                     type="button"
                     className="flex-1 py-2.5 px-0 border-none rounded-lg bg-[#2ECC71] text-white text-sm font-bold cursor-pointer transition-opacity hover:opacity-85"
                     onClick={() => updateOrderStatus(selectedOrder.order_id, 'completed')}
-                    title="เสร็จสิ้น"
+                    title="ยืนยัน"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                      <polyline points="22 4 12 14.01 9 11.01" />
-                    </svg>
+                    <span className="flex items-center justify-center gap-2">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                        <polyline points="22 4 12 14.01 9 11.01" />
+                      </svg>
+                      ยืนยัน
+                    </span>
                   </button>
                 )}
               </div>
