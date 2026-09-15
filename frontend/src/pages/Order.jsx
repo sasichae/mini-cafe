@@ -2,6 +2,34 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiFetch } from '../lib/api'
 
+const CATEGORY_GRADIENTS = {
+  1: { from: '#6F4A31', to: '#3A2314' },
+  2: { from: '#DE9A3E', to: '#B5651F' },
+  3: { from: '#96604A', to: '#5E3B2A' },
+}
+
+function ProductSvgIcon() {
+  return (
+    <svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="#FFF8EC" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 54V18a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v36" />
+      <path d="M18 54h28" />
+      <path d="M28 16V10a4 4 0 0 1 8 0v6" />
+      <path d="M25 32h14" />
+      <path d="M25 40h14" />
+    </svg>
+  )
+}
+
+function SmallProductSvgIcon() {
+  return (
+    <svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="#FFF8EC" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 54V18a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v36" />
+      <path d="M18 54h28" />
+      <path d="M28 16V10a4 4 0 0 1 8 0v6" />
+    </svg>
+  )
+}
+
 export default function Order({ user, onLogout }) {
   const [categories, setCategories] = useState([])
   const [products, setProducts] = useState([])
@@ -86,6 +114,11 @@ export default function Order({ user, onLogout }) {
     return cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
   }
 
+  function getCartQuantity(productId) {
+    const item = cart.find(i => i.product_id === productId)
+    return item ? item.quantity : 0
+  }
+
   async function placeOrder() {
     if (cart.length === 0 || orderLoading) return
 
@@ -125,260 +158,233 @@ export default function Order({ user, onLogout }) {
     setOrderError('')
   }
 
+  const totalItemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
+
   if (orderSuccess) {
     return (
-      <div className="min-h-full flex flex-col bg-cream">
-        <header className="flex items-center justify-between gap-4 px-7 py-4 border-b border-border bg-white">
-          <div className="flex flex-col gap-0.5">
-            <p className="m-0 text-[11px] font-bold tracking-[0.34em] text-caramel">MINI CAFE</p>
-            <h1 className="m-0 font-display font-semibold text-2xl leading-tight text-espresso">Staff Order</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="px-3 py-1.5 rounded-full bg-cream-deep text-espresso text-[13px] font-bold">{user.username}</span>
-            <button type="button" className="px-4 py-2 border-[1.5px] border-border rounded-lg bg-transparent text-mocha text-sm font-semibold cursor-pointer hover:border-error hover:text-error hover:bg-error-bg focus-visible:outline-3 focus-visible:outline-caramel focus-visible:outline-offset-2 transition-colors" onClick={onLogout} title="ออกจากระบบ">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
-            </button>
-          </div>
+      <div className="min-h-full bg-cream text-ink">
+        <header className="border-b border-border px-10 py-6">
+          <p className="text-[11px] font-bold tracking-[0.12em] text-rust">MINI CAFE</p>
+          <h1 className="font-display text-[34px] font-semibold leading-tight text-ink">สั่งออเดอร์</h1>
         </header>
 
-        <main className="flex-1 grid grid-cols-[1fr_320px] gap-6 p-6 overflow-hidden">
-          <section className="col-span-full flex flex-col items-center justify-center py-[60px] px-6 text-center">
-            <div className="w-20 h-20 text-[#2d9d4e] mb-6">
-              <svg viewBox="0 0 64 64" aria-hidden="true">
-                <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" strokeWidth="3" />
-                <path d="M20 32l8 8 16-16" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        <main className="flex min-h-[calc(100vh-100px)] items-center justify-center p-10">
+          <div className="text-center">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#2d9d4e]">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
-            <h2 className="m-0 mb-2 text-2xl font-bold text-espresso">สั่งซื้อสำเร็จ!</h2>
-            <p className="m-0 mb-1 text-base font-semibold text-caramel">Order #{orderSuccess.order_id}</p>
-            <p className="m-0 mb-1 text-xl font-bold text-espresso">ยอดรวม ฿{Number(orderSuccess.total_amount).toFixed(2)}</p>
-            <p className="m-0 mb-6 text-sm text-mocha">สถานะ: pending</p>
+            <h2 className="font-display mb-2 text-[28px] font-semibold text-ink">สั่งซื้อสำเร็จ!</h2>
+            <p className="mb-1 text-base font-semibold text-rust">Order #{orderSuccess.order_id}</p>
+            <p className="mb-1 text-[22px] font-bold text-ink">฿{Number(orderSuccess.total_amount).toFixed(2)}</p>
+            <p className="mb-8 text-sm text-ink-muted">สถานะ: pending</p>
             <button
               type="button"
-              className="px-8 py-3 border-none rounded-[10px] bg-espresso text-cream text-base font-semibold cursor-pointer hover:bg-[#3a2819] transition-colors"
+              className="rounded-lg bg-rust px-8 py-3 text-base font-semibold text-white transition-colors hover:bg-rust-dark"
               onClick={newOrder}
-              title="สั่งซื้อใหม่"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M21 2v6h-6" />
-                <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
-                <path d="M3 22v-6h6" />
-                <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
-              </svg>
+              สั่งซื้อใหม่
             </button>
-          </section>
+          </div>
         </main>
       </div>
     )
   }
 
   return (
-    <div className="min-h-full flex flex-col bg-cream">
-      <header className="flex items-center justify-between gap-4 px-7 py-4 border-b border-border bg-white">
-        <div className="flex flex-col gap-0.5">
-          <p className="m-0 text-[11px] font-bold tracking-[0.34em] text-caramel">MINI CAFE</p>
-          <h1 className="m-0 font-display font-semibold text-2xl leading-tight text-espresso">Staff Order</h1>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="px-3 py-1.5 rounded-full bg-cream-deep text-espresso text-[13px] font-bold">{user.username}</span>
-          <button type="button" className="px-4 py-2 border-[1.5px] border-border rounded-lg bg-transparent text-mocha text-sm font-semibold cursor-pointer hover:border-error hover:text-error hover:bg-error-bg focus-visible:outline-3 focus-visible:outline-caramel focus-visible:outline-offset-2 transition-colors" onClick={onLogout}>
-            Logout
-          </button>
+    <div className="min-h-full bg-cream text-ink">
+      {/* Header */}
+      <header className="border-b border-border px-10 py-6">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-[11px] font-bold tracking-[0.12em] text-rust">MINI CAFE</p>
+            <h1 className="font-display text-[34px] font-semibold leading-tight text-ink">สั่งออเดอร์</h1>
+          </div>
+          <div className="flex items-center gap-2.5 text-sm text-ink-muted">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+            <span>{totalItemCount} รายการในตะกร้า</span>
+          </div>
         </div>
       </header>
 
-      <main className="flex-1 grid grid-cols-[1fr_320px] gap-6 p-6 overflow-hidden">
-        <section className="flex flex-col gap-5 overflow-hidden">
-          <div className="flex gap-2 flex-wrap">
+      {/* Category Tabs */}
+      <div className="px-10 pt-7">
+        <div className="mb-6 flex gap-6 overflow-x-auto border-b border-border scrollbar-thin">
+          <button
+            type="button"
+            className={`shrink-0 whitespace-nowrap border-b-2 bg-transparent px-0.5 pb-3 text-[15px] transition-colors ${selectedCategory === null ? 'border-rust font-semibold text-ink' : 'border-transparent font-medium text-ink-muted'}`}
+            onClick={() => setSelectedCategory(null)}
+          >
+            ทั้งหมด
+          </button>
+          {categories.map(cat => (
             <button
+              key={cat.category_id}
               type="button"
-              className={`px-4 py-2 border-[1.5px] border-border rounded-lg bg-white text-mocha text-sm font-semibold cursor-pointer transition-all hover:border-caramel-light hover:text-espresso ${selectedCategory === null ? 'border-caramel bg-espresso text-cream' : ''}`}
-              onClick={() => setSelectedCategory(null)}
+              className={`shrink-0 whitespace-nowrap border-b-2 bg-transparent px-0.5 pb-3 text-[15px] transition-colors ${selectedCategory === cat.category_id ? 'border-rust font-semibold text-ink' : 'border-transparent font-medium text-ink-muted'}`}
+              onClick={() => setSelectedCategory(cat.category_id)}
             >
-              All
+              {cat.name}
             </button>
-            {categories.map(cat => (
-              <button
-                key={cat.category_id}
-                type="button"
-                className={`px-4 py-2 border-[1.5px] border-border rounded-lg bg-white text-mocha text-sm font-semibold cursor-pointer transition-all hover:border-caramel-light hover:text-espresso ${selectedCategory === cat.category_id ? 'border-caramel bg-espresso text-cream' : ''}`}
-                onClick={() => setSelectedCategory(cat.category_id)}
-              >
-                {cat.name}
-              </button>
-            ))}
-          </div>
+          ))}
+        </div>
+      </div>
 
+      {/* Main Content */}
+      <div className="flex flex-wrap items-start gap-8 px-10 pb-7">
+        {/* Product Grid */}
+        <div className="min-w-0 flex-1 basis-[600px]">
           {loading ? (
-            <p className="text-center py-10 text-mocha">Loading...</p>
+            <div className="py-16 text-center text-ink-muted">กำลังโหลด...</div>
           ) : products.length === 0 ? (
-            <p className="text-center py-10 text-mocha">ไม่มีสินค้า</p>
+            <div className="py-16 text-center text-ink-muted">ไม่มีสินค้า</div>
           ) : (
-            <div className="border border-border rounded-xl bg-white">
-              <table className="w-full border-collapse text-sm" style={{ tableLayout: 'fixed' }}>
-                <colgroup>
-                  <col style={{ width: '5%' }} />
-                  <col style={{ width: '8%' }} />
-                  <col style={{ width: '32%' }} />
-                  <col style={{ width: '15%' }} />
-                  <col style={{ width: '20%' }} />
-                  <col style={{ width: '20%' }} />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border">#</th>
-                    <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border">รูป</th>
-                    <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border">ชื่อสินค้า</th>
-                    <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border">ราคา</th>
-                    <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border">หมวดหมู่</th>
-                    <th className="px-4 py-3.5 text-center font-semibold text-mocha bg-cream border-b border-border">ดำเนินการ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.map((product, index) => {
-                    const category = categories.find(c => c.category_id === product.category_id)
-                    return (
-                      <tr key={product.product_id} className="hover:bg-cream">
-                        <td className="px-4 py-3 border-b border-border text-espresso align-middle font-bold text-caramel text-center">{index + 1}</td>
-                        <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">
-                          {product.image ? (
-                            <img src={product.image} alt={product.name} className="h-10 w-10 rounded-lg object-cover border border-border/50 mx-auto" />
-                          ) : (
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cream-deep/60 text-mocha/30 mx-auto">
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="3" y="3" width="18" height="18" rx="2" />
-                                <circle cx="9" cy="9" r="2" />
-                                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                              </svg>
-                            </div>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center truncate">{product.name}</td>
-                        <td className="px-4 py-3 border-b border-border text-espresso align-middle font-semibold text-center">฿{Number(product.price).toFixed(2)}</td>
-                        <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-cream/80 px-2.5 py-0.5 text-xs font-medium text-mocha">
-                            <span className="h-1.5 w-1.5 rounded-full bg-caramel" />
-                            {category ? category.name : '-'}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 border-b border-border text-espresso align-middle text-center">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-5">
+              {products.map(product => {
+                const gradient = CATEGORY_GRADIENTS[product.category_id] || CATEGORY_GRADIENTS[1]
+                const qty = getCartQuantity(product.product_id)
+                const category = categories.find(c => c.category_id === product.category_id)
+
+                return (
+                  <div
+                    key={product.product_id}
+                    className="overflow-hidden rounded-[10px] border border-border bg-white transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(36,26,18,0.10)]"
+                  >
+                    {/* Card Header with Gradient */}
+                    <div
+                      className="relative flex h-[150px] items-center justify-center"
+                      style={{ background: `linear-gradient(135deg, ${gradient.from}, ${gradient.to})` }}
+                    >
+                      <span className="absolute left-2.5 top-2.5 rounded-full bg-black/22 px-2.5 py-[3px] text-[11px] text-[#FFF8EC]">
+                        {category ? category.name : 'Product'}
+                      </span>
+                      {product.image ? (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="h-20 w-20 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <ProductSvgIcon />
+                      )}
+                    </div>
+
+                    {/* Card Body */}
+                    <div className="px-3.5 pt-3.5 pb-4">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <h3 className="font-display text-[17px] font-semibold text-ink">{product.name}</h3>
+                        <span className="shrink-0 font-semibold text-rust">฿{Number(product.price).toFixed(2)}</span>
+                      </div>
+
+                      {qty === 0 ? (
+                        <button
+                          type="button"
+                          className="mt-3 w-full rounded-md bg-rust py-2.5 text-sm font-medium text-white transition-colors hover:bg-rust-dark"
+                          onClick={() => addToCart(product)}
+                        >
+                          เพิ่มลงตะกร้า
+                        </button>
+                      ) : (
+                        <div className="mt-3 flex items-center justify-between rounded-md bg-rust-soft px-1.5 py-1">
                           <button
                             type="button"
-                            className="px-3 py-1.5 border-[1.5px] border-border rounded-md bg-transparent text-espresso text-[13px] font-semibold cursor-pointer transition-all hover:border-caramel hover:text-caramel"
-                            onClick={() => addToCart(product)}
-                            title="เพิ่มลงตะกร้า"
+                            className="cursor-pointer border-none bg-transparent p-1.5 text-rust-dark"
+                            onClick={() => updateQuantity(product.product_id, -1)}
                           >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                              <circle cx="9" cy="21" r="1" />
-                              <circle cx="20" cy="21" r="1" />
-                              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="5" y1="12" x2="19" y2="12" />
                             </svg>
                           </button>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
-
-        <aside className="flex flex-col p-5 border border-border rounded-xl bg-white h-fit max-h-[calc(100vh-140px)] sticky top-6">
-          <h2 className="m-0 mb-4 text-lg font-semibold text-espresso">Order Summary</h2>
-
-          {cart.length === 0 ? (
-            <p className="text-center py-6 text-mocha text-sm">ยังไม่มีสินค้าในตะกร้า</p>
-          ) : (
-            <>
-              <div className="flex flex-col gap-3 overflow-y-auto flex-1">
-                {cart.map(item => (
-                  <div key={item.product_id} className="flex flex-col gap-2 p-3 border border-border rounded-lg">
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold text-espresso">{item.name}</span>
-                      <span className="font-semibold text-caramel">฿{Number(item.price * item.quantity).toFixed(2)}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        className="w-7 h-7 border border-border rounded-md bg-cream text-espresso text-base font-semibold cursor-pointer flex items-center justify-center hover:bg-cream-deep"
-                        onClick={() => updateQuantity(item.product_id, -1)}
-                        title="ลดจำนวน"
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                      </button>
-                      <span className="min-w-6 text-center font-semibold">{item.quantity}</span>
-                      <button
-                        type="button"
-                        className="w-7 h-7 border border-border rounded-md bg-cream text-espresso text-base font-semibold cursor-pointer flex items-center justify-center hover:bg-cream-deep"
-                        onClick={() => updateQuantity(item.product_id, 1)}
-                        title="เพิ่มจำนวน"
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <line x1="12" y1="5" x2="12" y2="19" />
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                      </button>
-                      <button
-                        type="button"
-                        className="ml-auto px-2 py-1 border-none rounded bg-transparent text-error text-sm cursor-pointer hover:bg-error-bg"
-                        onClick={() => removeFromCart(item.product_id)}
-                        title="ลบออกจากตะกร้า"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M3 6h18" />
-                          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                        </svg>
-                      </button>
+                          <span className="text-sm font-semibold">{qty}</span>
+                          <button
+                            type="button"
+                            className="cursor-pointer border-none bg-transparent p-1.5 text-rust-dark"
+                            onClick={() => addToCart(product)}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="12" y1="5" x2="12" y2="19" />
+                              <line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
-                ))}
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Cart Sidebar */}
+        <aside className="sticky top-6 w-[300px] shrink-0 rounded-[10px] border border-border bg-white p-5">
+          <h2 className="font-display mb-3.5 text-[19px] font-semibold text-ink">ตะกร้าออเดอร์</h2>
+
+          {cart.length === 0 ? (
+            <p className="py-6 text-center text-sm text-ink-muted">ยังไม่มีสินค้าในตะกร้า</p>
+          ) : (
+            <>
+              <div className="mb-4 flex flex-col gap-3">
+                {cart.map(item => {
+                  const gradient = CATEGORY_GRADIENTS[item.category_id] || CATEGORY_GRADIENTS[1]
+                  return (
+                    <div key={item.product_id} className="flex items-center gap-2.5">
+                      <div
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md"
+                        style={{ background: `linear-gradient(135deg, ${gradient.from}, ${gradient.to})` }}
+                      >
+                        <div className="scale-50"><SmallProductSvgIcon /></div>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-sm font-medium">{item.name}</div>
+                        <div className="text-xs text-ink-muted">{item.quantity} × ฿{Number(item.price).toFixed(2)}</div>
+                      </div>
+                      <span className="text-[13px] font-semibold">฿{Number(item.price * item.quantity).toFixed(2)}</span>
+                      <button
+                        type="button"
+                        className="cursor-pointer border-none bg-transparent p-1 text-ink-muted"
+                        onClick={() => removeFromCart(item.product_id)}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </button>
+                    </div>
+                  )
+                })}
               </div>
 
-              <div className="mt-4 pt-4 border-t border-border">
-                <div className="flex justify-between items-center mb-4 text-base font-semibold text-espresso">
-                  <span>ยอดรวม</span>
-                  <span className="text-xl text-caramel">฿{Number(getTotalAmount()).toFixed(2)}</span>
+              <div className="mb-3.5 border-t border-border pt-3.5">
+                <div className="flex justify-between text-[15px] font-semibold">
+                  <span>รวมทั้งหมด</span>
+                  <span>฿{Number(getTotalAmount()).toFixed(2)}</span>
                 </div>
-                {orderError && (
-                  <p className="m-0 mb-3 px-3 py-2.5 rounded-lg bg-error-bg text-error text-[13px] font-semibold text-center" role="alert">{orderError}</p>
-                )}
-                <button
-                  type="button"
-                  className="w-full py-3.5 px-0 border-none rounded-[10px] bg-caramel text-white text-base font-bold cursor-pointer hover:bg-[#9a7a5a] disabled:bg-mocha disabled:cursor-not-allowed transition-colors"
-                  disabled={orderLoading}
-                  onClick={placeOrder}
-                  title="สั่งซื้อ"
-                >
-                  {orderLoading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="spin">
-                        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                      </svg>
-                      กำลังสั่งซื้อ...
-                    </span>
-                  ) : (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                        <polyline points="22 4 12 14.01 9 11.01" />
-                      </svg>
-                      สั่งซื้อ
-                    </span>
-                  )}
-                </button>
               </div>
+
+              {orderError && (
+                <div className="mb-3 rounded-lg bg-error-bg px-3 py-2.5 text-center text-[13px] font-semibold text-error" role="alert">
+                  {orderError}
+                </div>
+              )}
+
+              <button
+                type="button"
+                className={`w-full rounded-md py-3 text-sm font-semibold text-white transition-colors ${orderLoading ? 'cursor-not-allowed bg-ink-muted' : 'cursor-pointer bg-rust hover:bg-rust-dark'}`}
+                disabled={orderLoading}
+                onClick={placeOrder}
+              >
+                {orderLoading ? 'กำลังสั่งซื้อ...' : 'ยืนยันออเดอร์'}
+              </button>
             </>
           )}
         </aside>
-      </main>
+      </div>
     </div>
   )
 }

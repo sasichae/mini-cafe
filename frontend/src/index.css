@@ -13,6 +13,11 @@
   --color-warm-beige: #F5E6D3;
   --color-error: #b3402a;
   --color-error-bg: #fbeae5;
+  --color-rust: #B6552C;
+  --color-rust-dark: #8F3F1E;
+  --color-rust-soft: #F3DCCB;
+  --color-ink: #241A12;
+  --color-ink-muted: #7A6A57;
   
   --font-display: 'Fraunces', Georgia, 'Segoe UI', Tahoma, serif;
   --font-body: 'Karla', 'Segoe UI', Tahoma, sans-serif;
